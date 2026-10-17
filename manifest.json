@@ -1,0 +1,16 @@
+{
+  "name": "SecurityHire",
+  "short_name": "SecurityHire",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#0f2a4a",
+  "icons": [
+    {
+      "src": "logo.jpg",
+      "sizes": "192x192 512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
+

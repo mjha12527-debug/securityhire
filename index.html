@@ -1,23 +1,43 @@
-<h1>🛡️ SecurityHire</h1><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SecurityHire</title>
+<link rel="manifest" href="manifest.json">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-  body { background: #0b1220; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; padding: 20px; text-align: center; }
-  h1 { color: #ffa500; margin-bottom: 10px; }
-  p { color: #9fc0e8; margin-bottom: 30px; }
-  .btn { display: block; width: 100%; max-width: 300px padding: 16px; margin: 10px 0; text-decoration: none; color: #fff; border-radius: 10px; font-size: 18px; font-weight: bold; }
+  body { background: #0b1220; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; text-align: center; }
+  .logo { width: 130px; height: 130px; border-radius: 25px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+  h1 { color: #ffa500; margin-bottom: 5px; font-size: 28px; }
+  .subtitle { color: #9fc0e8; margin-bottom: 20px; font-size: 16px; }
+  
+  /* एरिया वाला डिब्बा */
+  .area-card { background: #141e30; padding: 12px 15px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #2b3b55; max-width: 300px; width: 100%; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+  .area-card h4 { color: #ffa500; font-size: 14px; margin-bottom: 6px; font-weight: bold; }
+  .area-card p { color: #9fc0e8; font-size: 13px; line-height: 1.5; margin-bottom: 0; }
+  
+  /* बटन */
+  .btn { display: block; width: 100%; max-width: 300px; padding: 16px; margin: 10px 0; text-decoration: none; color: #fff; border-radius: 10px; font-size: 17px; font-weight: bold; transition: 0.2s; }
   .btn-primary { background-color: #1e6fd9; }
+  .btn-primary:active { background-color: #1655a8; }
   .btn-secondary { background-color: #2b3b55; border: 1px solid #1e6fd9; }
+  .btn-secondary:active { background-color: #1a2638; }
 </style>
 </head>
 <body>
-  <h1>🛡️ SecurityHire</h1>
-  <p>सिक्योरिटी सेक्टर की नौकरियाँ</p>
+  <img src="logo.jpg" alt="SecurityHire Logo" class="logo">
+  <h1>SecurityHire</h1>
+  <p class="subtitle">सिक्योरिटी सेक्टर की नौकरियाँ</p>
+  
+  <!-- नया एरिया सेक्शन -->
+  <div class="area-card">
+    <h4>📍 हमारा कार्यक्षेत्र (Area)</h4>
+    <p>पुणे | बारामती | सोलापुर<br>SIS ब्रांच (300 किमी का दायरा)</p>
+  </div>
+
   <a href="post.html" class="btn btn-primary">📢 नौकरी डालें (Employer)</a>
-  <a href="find.html" class="btn btn-secondary">🔍 नौकर
-<h1>🛡️ SecurityHire</h1>
-<img src="logo.jpg" alt="SecurityHire Logo" style="width: 150px; height: 150px; border-radius: 30px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
+  <a href="find.html" class="btn btn-secondary">🔍 नौकरी खोजें (Job Seeker)</a>
+</body>
+</html>
+

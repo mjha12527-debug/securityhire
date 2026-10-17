@@ -7,27 +7,37 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
   body { background: #0b1220; color: #fff; padding-bottom: 40px; }
-  header { padding: 18px; background: #1a3c6e; text-align: center; position: relative; }
-  header h1 { font-size: 20px; }
-  .back { position: absolute; left: 15px; top: 20px; color: #9fc0e8; text-decoration: none; font-size: 14px; }
   
-  .card { background: #141e30; border: 1px solid #24334d; border-radius: 14px; padding: 16px; margin: 15px auto; max-width: 500px; width: 92%; }
-  .card h3 { color: #ffa500; margin-bottom: 12px; font-size: 18px; }
+  /* प्रीमियम हेडर */
+  header { padding: 20px; background: linear-gradient(135deg, #0f2a4a, #1a3c6e); text-align: center; position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
+  header h1 { font-size: 22px; font-weight: bold; }
+  .back { position: absolute; left: 15px; top: 22px; color: #9fc0e8; text-decoration: none; font-size: 15px; font-weight: bold; }
   
-  input, textarea { width: 100%; padding: 12px; margin: 6px 0; border-radius: 8px; border: 1px solid #2b3b55; background: #0e1729; color: #fff; font-size: 15px; }
+  /* कार्ड डिज़ाइन */
+  .card { background: #141e30; border: 1px solid #24334d; border-radius: 16px; padding: 20px; margin: 20px auto; max-width: 500px; width: 94%; box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+  .card h3 { color: #ffa500; margin-bottom: 15px; font-size: 20px; border-bottom: 1px solid #24334d; padding-bottom: 10px; }
   
+  /* इनपुट बॉक्स */
+  input, textarea { width: 100%; padding: 14px; margin: 8px 0; border-radius: 10px; border: 1px solid #2b3b55; background: #0e1729; color: #fff; font-size: 15px; transition: 0.3s; }
+  input:focus, textarea:focus { border-color: #1e6fd9; outline: none; box-shadow: 0 0 8px rgba(30,111,217,0.3); }
+  
+  /* बटन */
   .row { display: flex; gap: 10px; margin-top: 10px; }
-  .btn { display: block; width: 100%; padding: 14px; border-radius: 8px; font-size: 16px; font-weight: bold; border: none; cursor: pointer; text-align: center; color: #fff; }
-  .btn-primary { background-color: #1e6fd9; margin-top: 15px; }
-  .btn-secondary { background-color: #2b3b55; }
+  .btn { display: block; width: 100%; padding: 15px; border-radius: 10px; font-size: 16px; font-weight: bold; border: none; cursor: pointer; text-align: center; color: #fff; transition: 0.2s; }
+  .btn:active { transform: scale(0.98); }
+  .btn-primary { background: linear-gradient(135deg, #1e6fd9, #104b9c); box-shadow: 0 4px 15px rgba(30,111,217,0.4); margin-top: 15px; }
+  .btn-secondary { background: #2b3b55; }
   
-  .label { font-size: 14px; color: #9fc0e8; margin-top: 10px; }
+  .label { font-size: 15px; color: #9fc0e8; margin-top: 18px; font-weight: bold; display: block; }
   
-  .skills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px; }
-  .skills label { background: #0e1729; border: 1px solid #2b3b55; padding: 8px 12px; border-radius: 20px; font-size: 14px; display: flex; align-items: center; gap: 6px; color: #fff; }
+  /* चेकबॉक्स की सुंदर डिज़ाइन */
+  .skills { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+  .skills label { background: #0e1729; border: 1px solid #2b3b55; padding: 10px 14px; border-radius: 25px; font-size: 14px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: 0.2s; }
+  .skills label:hover { border-color: #1e6fd9; background: #142238; }
+  .skills input[type="checkbox"] { accent-color: #1e6fd9; width: 18px; height: 18px; margin: 0; cursor: pointer; }
   
-  .userbar { max-width: 500px; margin: 10px auto 0; text-align: right; font-size: 14px; color: #9fc0e8; padding: 0 14px; }
-  .userbar a { color: #ff9b9b; text-decoration: none; }
+  .userbar { max-width: 500px; margin: 15px auto 0; text-align: right; font-size: 14px; color: #9fc0e8; padding: 0 15px; }
+  .userbar a { color: #ff6b6b; text-decoration: none; font-weight: bold; }
 </style>
 </head>
 <body>
@@ -36,7 +46,7 @@
 
 <!-- Login/Signup -->
 <div id="authBox" class="card">
-  <h3>एम्प्लॉयर लॉगिन / साइनअप</h3>
+  <h3>🔐 एम्प्लॉयर लॉगिन / साइनअप</h3>
   <input id="email" type="email" placeholder="ऑफिशियल ईमेल (जैसे: @sisindia.com)" autocomplete="email">
   <input id="pass" type="password" placeholder="पासवर्ड (6+ अक्षर)" autocomplete="current-password">
   <div class="row">
@@ -47,16 +57,16 @@
 
 <!-- Job form -->
 <form id="jobForm" class="card" style="display:none">
-  <h3>नौकरी की जानकारी</h3>
+  <h3>📝 नौकरी की जानकारी</h3>
   <input name="title" placeholder="पद (जैसे: Security Supervisor)" required>
   <input name="company" placeholder="कंपनी का नाम" required>
-  <input name="location" placeholder="एरिया/लोकेशन (जैसे: पुणे, बारामती MIDC)" required>
+  <input name="location" placeholder="एरिया/लोकेशन (जैसे: पुणे, बारामती)" required>
   
   <input name="experience" placeholder="अनुभव (जैसे: 2-3 साल)" required>
   <input name="salary" placeholder="सैलरी (जैसे: ₹18,000-₹25,000)">
   <input name="dutyHours" placeholder="ड्यूटी के घंटे (जैसे: 8 घंटे, 12 घंटे)">
 
-  <p class="label">सुविधाएं (जो मिलती हैं, टिक करें):</p>
+  <span class="label">✅ सुविधाएं (जो मिलती हैं, टिक करें):</span>
   <div id="facilitiesBox" class="skills">
     <label><input type="checkbox" name="facilities" value="ESI"> ESI</label>
     <label><input type="checkbox" name="facilities" value="PF"> PF</label>
@@ -66,15 +76,16 @@
     <label><input type="checkbox" name="facilities" value="Food"> खाना</label>
   </div>
 
-  <p class="label">स्किल्स (जो लागू हों, टिक करें):</p>
+  <span class="label">🎯 स्किल्स (जो लागू हों, टिक करें):</span>
   <div id="skillsBox" class="skills"></div>
 
-  <textarea name="description" placeholder="काम का विवरण (जिम्मेदारियाँ)" rows="3" required></textarea>
+  <span class="label">📄 काम का विवरण:</span>
+  <textarea name="description" placeholder="जिम्मेदारियाँ और काम की जानकारी लिखें..." rows="4" required></textarea>
 
-  <p class="label">संपर्क (जो देना चाहें):</p>
+  <span class="label">📞 संपर्क (जो देना चाहें):</span>
   <input name="contactPhone" placeholder="फोन नंबर (10 अंक)" inputmode="numeric">
   <input name="contactWhatsapp" placeholder="WhatsApp नंबर (10 अंक)">
-  <input name="contactEmail" type="email" placeholder="ईमेल">
+  <input name="contactEmail" type="email" placeholder="ईमेल आईडी">
 
   <button type="submit" id="postBtn" class="btn btn-primary">✅ नौकरी पोस्ट करें</button>
 </form>

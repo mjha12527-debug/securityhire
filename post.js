@@ -16,10 +16,17 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-const SKILLS = ["Crisis Management","SAP","ERP","Material Handling",
-  "CCTV Operations","Access Control","Fire Safety","Industrial Security",
-  "Loss Prevention","Investigation","Physical Security","Emergency Response",
-  "Store & Inventory","Logistics Security"];
+// यहाँ हमने स्किल्स की लिस्ट को छोटा और सटीक कर दिया है
+const SKILLS = [
+  "सीसीटीवी (CCTV)", 
+  "फिजिकल गार्डिंग", 
+  "फायर एंड सेफ्टी", 
+  "क्राइसिस मैनेजमेंट", 
+  "एक्सेस कंट्रोल", 
+  "टीम सुपरविजन", 
+  "मटेरियल हैंडलिंग", 
+  "भूतपूर्व सैनिक (Ex-Servicemen)"
+];
 
 const skillsBox = document.getElementById('skillsBox');
 SKILLS.forEach(s => {
@@ -36,7 +43,7 @@ onAuthStateChanged(auth, user => {
   if (user) {
     authBox.style.display = 'none';
     jobForm.style.display = 'block';
-    userBar.innerHTML = `${user.email} • <a href="#" id="logout">लॉगआउट</a>`;
+    userBar.innerHTML = `<span style="color:#fff;">${user.email}</span> <a href="#" id="logout">लॉगआउट</a>`;
     document.getElementById('logout').onclick = e => {
       e.preventDefault(); signOut(auth);
     };
@@ -82,7 +89,6 @@ jobForm.onsubmit = async (e) => {
     return alert('कम से कम एक संपर्क (फोन/WhatsApp/ईमेल) दें');
   }
 
-  // पैसों की ठगी रोकने के लिए फिल्टर
   const badWords = ['फीस', 'पैसा', 'पैसे', 'एडवांस', 'रजिस्ट्रेशन चार्ज', 'वीजा'];
   const descLower = f.description.value.toLowerCase();
   if (badWords.some(word => descLower.includes(word))) {

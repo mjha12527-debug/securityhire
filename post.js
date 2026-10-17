@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -16,85 +16,98 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+const SKILLS = ["Crisis Management","SAP","ERP","Material Handling",
+  "CCTV Operations","Access Control","Fire Safety","Industrial Security",
+  "Loss Prevention","Investigation","Physical Security","Emergency Response",
+  "Store & Inventory","Logistics Security"];
+
+const skillsBox = document.getElementById('skillsBox');
+SKILLS.forEach(s => {
+  const l = document.createElement('label');
+  l.innerHTML = `<input type="checkbox" name="skills" value="${s}"> ${s}`;
+  skillsBox.appendChild(l);
+});
+
 const authBox = document.getElementById('authBox');
 const jobForm = document.getElementById('jobForm');
+const userBar = document.getElementById('userBar');
 
-// लॉगिन चेक करना (अगर लॉगिन है तो फॉर्म दिखेगा, नहीं तो लॉगिन बॉक्स)
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, user => {
   if (user) {
     authBox.style.display = 'none';
     jobForm.style.display = 'block';
+    userBar.innerHTML = `${user.email} • <a href="#" id="logout">लॉगआउट</a>`;
+    document.getElementById('logout').onclick = e => {
+      e.preventDefault(); signOut(auth);
+    };
   } else {
     authBox.style.display = 'block';
     jobForm.style.display = 'none';
+    userBar.innerHTML = '';
   }
 });
 
-// नया अकाउंट बनाना (सिर्फ ऑफिशियल ईमेल के लिए)
-document.getElementById('signupBtn').addEventListener('click', async () => {
+document.getElementById('signupBtn').onclick = async () => {
   const email = document.getElementById('email').value;
   const pass = document.getElementById('pass').value;
-  
-  if(!email || pass.length < 6) return alert('ईमेल और 6+ अक्षर का पासवर्ड डालें!');
+  if (!email || pass.length < 6) return alert('ईमेल और 6+ अक्षर का पासवर्ड डालें!');
 
-  // सिर्फ कंपनी के ईमेल की जाँच
   const allowedDomains = ['@sisindia.com', '@group4india.com'];
   if (!allowedDomains.some(domain => email.endsWith(domain))) {
     return alert('❌ सिर्फ ऑफिशियल कंपनी के ईमेल से ही अकाउंट बन सकता है (जैसे: @sisindia.com)');
   }
   
-  try {
-    await createUserWithEmailAndPassword(auth, email, pass);
-    alert('अकाउंट बन गया! अब आप नौकरी पोस्ट कर सकते हैं।');
-  } catch (error) {
-    alert('गलती: ' + error.message);
-  }
-});
+  try { await createUserWithEmailAndPassword(auth, email, pass); }
+  catch(e) { alert(e.message); }
+};
 
-// लॉगिन करना
-document.getElementById('loginBtn').addEventListener('click', async () => {
+document.getElementById('loginBtn').onclick = async () => {
   const email = document.getElementById('email').value;
   const pass = document.getElementById('pass').value;
+  try { await signInWithEmailAndPassword(auth, email, pass); }
+  catch(e) { alert(e.message); }
+};
+
+jobForm.onsubmit = async (e) => {
+  e.preventDefault();
+  const f = jobForm;
+
+  const facilities = [...document.querySelectorAll('input[name="facilities"]:checked')].map(x => x.value);
+  const skills = [...document.querySelectorAll('input[name="skills"]:checked')].map(x => x.value);
+
+  const phone = f.contactPhone.value.replace(/\D/g,'');
+  const wa = f.contactWhatsapp.value.replace(/\D/g,'');
   
-  try {
-    await signInWithEmailAndPassword(auth, email, pass);
-    alert('लॉगिन हो गया!');
-  } catch (error) {
-    alert('गलती: ' + error.message);
-  }
-});
-
-// नौकरी का फॉर्म सेव करना (पैसों की ठगी रोकने के लिए फिल्टर के साथ)
-document.getElementById('postBtn').addEventListener('click', async () => {
-  const title = document.querySelector('input[name="title"]').value;
-  const company = document.querySelector('input[name="company"]').value;
-  const location = document.querySelector('input[name="location"]').value;
-  const experience = document.querySelector('input[name="experience"]').value;
-  const salary = document.querySelector('input[name="salary"]').value;
-  const description = document.querySelector('textarea[name="description"]').value;
-  const contactWhatsapp = document.querySelector('input[name="contactWhatsapp"]').value;
-
-  if (!title || !company || !location) {
-    return alert('पद, कंपनी और लोकेशन जरूरी है!');
+  if (!phone && !wa && !f.contactEmail.value) {
+    return alert('कम से कम एक संपर्क (फोन/WhatsApp/ईमेल) दें');
   }
 
-  // पैसे मांगने वाले शब्दों को रोकने के लिए फिल्टर
+  // पैसों की ठगी रोकने के लिए फिल्टर
   const badWords = ['फीस', 'पैसा', 'पैसे', 'एडवांस', 'रजिस्ट्रेशन चार्ज', 'वीजा'];
-  const descLower = description.toLowerCase();
+  const descLower = f.description.value.toLowerCase();
   if (badWords.some(word => descLower.includes(word))) {
     return alert('❌ नौकरी के विवरण में पैसों की मांग (जैसे फीस, एडवांस) नहीं की जा सकती।');
   }
 
   try {
-    await addDoc(collection(db, "jobs"), {
-      title, company, location, experience, salary, description, contactWhatsapp,
+    await addDoc(collection(db, 'jobs'), {
+      title: f.title.value.trim(),
+      company: f.company.value.trim(),
+      location: f.location.value.trim(),
+      experience: f.experience.value.trim(),
+      salary: f.salary.value.trim(),
+      dutyHours: f.dutyHours.value.trim(),
+      facilities: facilities,
+      description: f.description.value.trim(),
+      skills: skills,
+      contactPhone: phone,
+      contactWhatsapp: wa,
+      contactEmail: f.contactEmail.value.trim(),
       postedBy: auth.currentUser.uid,
-      postedAt: serverTimestamp()
+      postedAt: serverTimestamp(),
+      isActive: true
     });
     alert('✅ नौकरी पोस्ट हो गई!');
-    
-    document.querySelectorAll('#jobForm input, #jobForm textarea').forEach(el => el.value = '');
-  } catch (error) {
-    alert('गलती: ' + error.message);
-  }
-});
+    jobForm.reset();
+  } catch(e) { alert('गलती: ' + e.message); }
+};

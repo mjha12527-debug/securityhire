@@ -4,54 +4,57 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>नौकरी डालें — SecurityHire</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-  body { background: #0b1220; color: #fff; padding-bottom: 40px; }
-  header { padding: 18px; background: #1a3c6e; text-align: center; position: relative; }
-  header h1 { font-size: 20px; }
-  .back { position: absolute; left: 15px; top: 20px; color: #9fc0e8; text-decoration: none; font-size: 14px; }
-  .card { background: #141e30; border: 1px solid #24334d; border-radius: 14px; padding: 16px; margin: 15px auto; max-width: 500px; width: 92%; }
-  .card h3 { color: #ffa500; margin-bottom: 12px; font-size: 18px; }
-  input, textarea { width: 100%; padding: 12px; margin: 6px 0; border-radius: 8px; border: 1px solid #2b3b55; background: #0e1729; color: #fff; font-size: 15px; }
-  .row { display: flex; gap: 10px; margin-top: 10px; }
-  .btn { display: block; width: 100%; padding: 14px; border-radius: 8px; font-size: 16px; font-weight: bold; border: none; cursor: pointer; text-align: center; color: #fff; }
-  .btn-primary { background-color: #1e6fd9; margin-top: 15px; }
-  .btn-secondary { background-color: #2b3b55; }
-  .label { font-size: 14px; color: #9fc0e8; margin-top: 10px; }
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <a href="index.html" class="back">← होम</a>
-    <h1>📢 नौकरी डालें</h1>
-  </header>
+<header><h1>📢 नौकरी डालें</h1><a href="index.html" class="back">← होम</a></header>
+<div id="userBar" class="userbar"></div>
 
-  <!-- लॉगिन बॉक्स -->
-  <div class="card" id="authBox">
-    <h3>एम्प्लॉयर लॉगिन / साइनअप</h3>
-    <input id="email" type="email" placeholder="ईमेल पता">
-    <input id="pass" type="password" placeholder="पासवर्ड (कम से कम 6 अक्षर)">
-    <div class="row">
-      <button id="loginBtn" class="btn btn-secondary">लॉगिन</button>
-      <button id="signupBtn" class="btn btn-primary" style="margin-top:0;">नया अकाउंट</button>
-    </div>
+<!-- Login/Signup -->
+<div id="authBox" class="card">
+  <h3>एम्प्लॉयर लॉगिन / साइनअप</h3>
+  <input id="email" type="email" placeholder="ऑफिशियल ईमेल (जैसे: @sisindia.com)" autocomplete="email">
+  <input id="pass" type="password" placeholder="पासवर्ड (6+ अक्षर)" autocomplete="current-password">
+  <div class="row">
+    <button id="loginBtn" class="btn btn-secondary">लॉगिन</button>
+    <button id="signupBtn" class="btn btn-primary">नया अकाउंट</button>
+  </div>
+</div>
+
+<!-- Job form -->
+<form id="jobForm" class="card" style="display:none">
+  <h3>नौकरी की जानकारी</h3>
+  <input name="title" placeholder="पद (जैसे: Security Supervisor)" required>
+  <input name="company" placeholder="कंपनी का नाम" required>
+  <input name="location" placeholder="एरिया/लोकेशन (जैसे: पुणे, बारामती MIDC)" required>
+  
+  <input name="experience" placeholder="अनुभव (जैसे: 2-3 साल)" required>
+  <input name="salary" placeholder="सैलरी (जैसे: ₹18,000-₹25,000)">
+  <input name="dutyHours" placeholder="ड्यूटी के घंटे (जैसे: 8 घंटे, 12 घंटे)">
+
+  <p class="label">सुविधाएं (जो मिलती हैं, टिक करें):</p>
+  <div id="facilitiesBox" class="skills">
+    <label><input type="checkbox" name="facilities" value="ESI"> ESI</label>
+    <label><input type="checkbox" name="facilities" value="PF"> PF</label>
+    <label><input type="checkbox" name="facilities" value="Bonus"> बोनस</label>
+    <label><input type="checkbox" name="facilities" value="Leave"> पेड लीव</label>
+    <label><input type="checkbox" name="facilities" value="Room"> रहने का रूम</label>
+    <label><input type="checkbox" name="facilities" value="Food"> खाना</label>
   </div>
 
-  <!-- नौकरी का फॉर्म (शुरुआत में छिपा हुआ) -->
-  <div class="card" id="jobForm" style="display:none;">
-    <h3>नौकरी की जानकारी भरें</h3>
-    <input name="title" placeholder="पद का नाम (जैसे: Security Supervisor)">
-    <input name="company" placeholder="कंपनी का नाम">
-    <input name="location" placeholder="लोकेशन (शहर/साइट)">
-    <input name="experience" placeholder="अनुभव (जैसे: 2 साल)">
-    <input name="salary" placeholder="सैलरी (जैसे: ₹15,000)">
-    <textarea name="description" placeholder="काम का विवरण (छोटा सा)" rows="3"></textarea>
-    
-    <p class="label">संपर्क नंबर (WhatsApp):</p>
-    <input name="contactWhatsapp" placeholder="10 अंकों का नंबर (बिना +91 के)">
-    
-    <button id="postBtn" class="btn btn-primary">✅ नौकरी पोस्ट करें</button>
-  </div>
+  <p class="label">स्किल्स (जो लागू हों, टिक करें):</p>
+  <div id="skillsBox" class="skills"></div>
+
+  <textarea name="description" placeholder="काम का विवरण (जिम्मेदारियाँ)" rows="3" required></textarea>
+
+  <p class="label">संपर्क (जो देना चाहें):</p>
+  <input name="contactPhone" placeholder="फोन नंबर (10 अंक)" inputmode="numeric">
+  <input name="contactWhatsapp" placeholder="WhatsApp नंबर (10 अंक)">
+  <input name="contactEmail" type="email" placeholder="ईमेल">
+
+  <button type="submit" id="postBtn" class="btn btn-primary">✅ नौकरी पोस्ट करें</button>
+</form>
+
+<script type="module" src="post.js"></script>
 </body>
 </html>
-<script type="module" src="post.js"></script>

@@ -2,7 +2,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebas
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-// आपका Firebase कोड (जो आपने मुझे भेजा था)
 const firebaseConfig = {
   apiKey: "AIzaSyAkVn1rj2klXafSTkf30K6lsJNSJhu3Ryw",
   authDomain: "securityhire-fc26f.firebaseapp.com",
@@ -31,11 +30,18 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-// नया अकाउंट बनाना
+// नया अकाउंट बनाना (सिर्फ ऑफिशियल ईमेल के लिए)
 document.getElementById('signupBtn').addEventListener('click', async () => {
   const email = document.getElementById('email').value;
   const pass = document.getElementById('pass').value;
+  
   if(!email || pass.length < 6) return alert('ईमेल और 6+ अक्षर का पासवर्ड डालें!');
+
+  // सिर्फ कंपनी के ईमेल की जाँच
+  const allowedDomains = ['@sisindia.com', '@group4india.com'];
+  if (!allowedDomains.some(domain => email.endsWith(domain))) {
+    return alert('❌ सिर्फ ऑफिशियल कंपनी के ईमेल से ही अकाउंट बन सकता है (जैसे: @sisindia.com)');
+  }
   
   try {
     await createUserWithEmailAndPassword(auth, email, pass);
@@ -58,7 +64,7 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
   }
 });
 
-// नौकरी का फॉर्म सेव करना
+// नौकरी का फॉर्म सेव करना (पैसों की ठगी रोकने के लिए फिल्टर के साथ)
 document.getElementById('postBtn').addEventListener('click', async () => {
   const title = document.querySelector('input[name="title"]').value;
   const company = document.querySelector('input[name="company"]').value;
@@ -72,6 +78,13 @@ document.getElementById('postBtn').addEventListener('click', async () => {
     return alert('पद, कंपनी और लोकेशन जरूरी है!');
   }
 
+  // पैसे मांगने वाले शब्दों को रोकने के लिए फिल्टर
+  const badWords = ['फीस', 'पैसा', 'पैसे', 'एडवांस', 'रजिस्ट्रेशन चार्ज', 'वीजा'];
+  const descLower = description.toLowerCase();
+  if (badWords.some(word => descLower.includes(word))) {
+    return alert('❌ नौकरी के विवरण में पैसों की मांग (जैसे फीस, एडवांस) नहीं की जा सकती।');
+  }
+
   try {
     await addDoc(collection(db, "jobs"), {
       title, company, location, experience, salary, description, contactWhatsapp,
@@ -80,7 +93,6 @@ document.getElementById('postBtn').addEventListener('click', async () => {
     });
     alert('✅ नौकरी पोस्ट हो गई!');
     
-    // फॉर्म खाली करना
     document.querySelectorAll('#jobForm input, #jobForm textarea').forEach(el => el.value = '');
   } catch (error) {
     alert('गलती: ' + error.message);

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>नौकरी खोजें — SecurityHire</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+  body { background: #0b1220; color: #fff; padding-bottom: 40px; }
+  header { padding: 18px; background: #1a3c6e; text-align: center; position: relative; }
+  header h1 { font-size: 20px; }
+  .back { position: absolute; left: 15px; top: 20px; color: #9fc0e8; text-decoration: none; font-size: 14px; }
+  
+  #jobList { max-width: 500px; margin: 15px auto; padding: 0 10px; }
+  .job-card { background: #141e30; border: 1px solid #24334d; border-radius: 12px; padding: 15px; margin-bottom: 15px; }
+  .job-card h3 { color: #ffa500; font-size: 18px; margin-bottom: 5px; }
+  .job-card .meta { color: #9fc0e8; font-size: 14px; margin: 3px 0; }
+  .job-card .desc { font-size: 14px; margin: 10px 0; color: #ccc; }
+  .btn-wa { display: block; text-align: center; background: #25D366; color: #fff; text-decoration: none; padding: 10px; border-radius: 8px; font-weight: bold; margin-top: 10px; }
+  .loading { text-align: center; color: #9fc0e8; margin-top: 30px; }
+</style>
+</head>
+<body>
+  <header>
+    <a href="index.html" class="back">← होम</a>
+    <h1>🔍 नौकरियाँ खोजें</h1>
+  </header>
+
+  <div id="jobList">
+    <p class="loading">नौकरियाँ लोड हो रही हैं...</p>
+  </div>
+
+  <!-- यह लाइन ऐप को इंजन से जोड़ेगी -->
+  <script type="module" src="find.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>एडमिन पैनल — SecurityHire</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+  body { background: #0b1220; color: #fff; padding-bottom: 40px; }
+  
+  header { padding: 20px 15px; background: linear-gradient(135deg, #0f2a4a, #1a3c6e); text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+  header h1 { font-size: 20px; color: #ffa500; font-weight: 600; }
+  .back { position: absolute; left: 15px; top: 22px; color: #9fc0e8; text-decoration: none; font-size: 14px; font-weight: 500; }
+  
+  .container { max-width: 600px; margin: 15px auto; padding: 0 15px; }
+  .alert { background: rgba(211, 47, 47, 0.2); border: 1px solid #d32f2f; color: #ff9b9b; padding: 15px; border-radius: 10px; text-align: center; margin-bottom: 20px; font-weight: 600; display: none; }
+  
+  .job-card { background: #141e30; border: 1px solid #24334d; border-radius: 16px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+  .job-card h3 { color: #ffa500; font-size: 18px; margin-bottom: 8px; }
+  .job-card p { color: #9fc0e8; font-size: 14px; margin-bottom: 5px; }
+  
+  .btn-delete { display: flex; justify-content: center; align-items: center; gap: 8px; background: #d32f2f; color: #fff; border: none; padding: 12px; border-radius: 10px; width: 100%; margin-top: 15px; font-size: 15px; font-weight: 700; cursor: pointer; }
+  .btn-delete:active { background: #b71c1c; }
+  .empty-state { text-align: center; color: #5a6b85; font-size: 16px; margin-top: 50px; }
+</style>
+</head>
+<body>
+<header>
+  <a href="index.html" class="back">← होम</a>
+  <h1>👑 एडमिन पैनल</h1>
+</header>
+
+<div class="container">
+  <div id="alertBox" class="alert">❌ आपके पास एडमिन का एक्सेस नहीं है। कृपया अपने ईमेल से लॉगिन करें।</div>
+  <div id="jobList">
+    <p class="empty-state">लोड हो रहा है...</p>
+  </div>
+</div>
+
+<script type="module" src="admin.js"></script>
+</body>
+</html>

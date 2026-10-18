@@ -72,7 +72,17 @@
   <script>
     function shareApp() {
       const msg = "नमस्ते, SecurityHire पर पुणे, बारामती और सोलापुर में सिक्योरिटी गार्ड की नई नौकरियां आ रही हैं। आप भी यह ऐप देखें: https://mjha12527-debug.github.io/securityhire/";
-      window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
+      
+      // असली मोबाइल शेयर मेन्यू खोलने के लिए (Web Share API)
+      if (navigator.share) {
+        navigator.share({
+          title: 'SecurityHire - सिक्योरिटी नौकरियां',
+          text: msg,
+        }).catch(console.error);
+      } else {
+        // अगर फोन सपोर्ट न करे, तो सीधा WhatsApp खोलें
+        window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
+      }
     }
   </script>
 

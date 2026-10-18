@@ -21,33 +21,23 @@ const searchInput = document.getElementById('searchInput');
 let allJobs = []; 
 let currentUser = null;
 
-// 🛡️ XSS सुरक्षा कवच (हैकर्स के कोड को बेअसर करने के लिए)
+// 🛡️ XSS सुरक्षा कवच
 function escapeHTML(str) {
   if (!str) return '';
-  return str.replace(/[&<>'"]/g, 
-    tag => ({
-      '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
-    }[tag] || tag)
-  );
+  return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
 }
 
-onAuthStateChanged(auth, (user) => {
-  currentUser = user;
-});
+onAuthStateChanged(auth, (user) => { currentUser = user; });
 
 async function loadJobs() {
   try {
     const q = query(collection(db, "jobs"), orderBy("postedAt", "desc"));
     const querySnapshot = await getDocs(q);
-    
     allJobs = []; 
-    querySnapshot.forEach((doc) => {
-      allJobs.push({ id: doc.id, ...doc.data() });
-    });
+    querySnapshot.forEach((doc) => { allJobs.push({ id: doc.id, ...doc.data() }); });
     renderJobs(allJobs); 
   } catch (error) {
-    console.error("Error loading jobs: ", error);
-    jobList.innerHTML = '<p class="loading">नौकरियाँ लोड करने में गलती आई।</p>';
+    jobList.innerHTML = '<p style="text-align:center; color:red; margin-top:30px;">नौकरियाँ लोड करने में गलती आई।</p>';
   }
 }
 
@@ -57,17 +47,14 @@ window.deleteJob = async function(jobId) {
       await deleteDoc(doc(db, "jobs", jobId));
       alert("✅ नौकरी डिलीट हो गई!");
       loadJobs(); 
-    } catch (error) {
-      alert("डिलीट करने में गलती आई: " + error.message);
-    }
+    } catch (error) { alert("गलती: " + error.message); }
   }
 }
 
 function renderJobs(jobsToShow) {
   jobList.innerHTML = ''; 
-
   if (jobsToShow.length === 0) {
-    jobList.innerHTML = '<div class="empty-state">🔍<br><br>कोई नौकरी नहीं मिली।</div>';
+    jobList.innerHTML = '<p style="text-align:center; margin-top:30px;">कोई नौकरी नहीं मिली।</p>';
     return;
   }
 
@@ -79,9 +66,6 @@ function renderJobs(jobsToShow) {
     const safeSalary = escapeHTML(data.salary);
     const safeDuty = escapeHTML(data.dutyHours);
     const safeDesc = escapeHTML(data.description);
-
-    const waText = encodeURIComponent(`नमस्ते, SecurityHire पर "${data.title}" (${data.company}) की नौकरी देखी। क्या यह अभी खुली है?`);
-    const waLink = data.contactWhatsapp ? `https://wa.me/91${escapeHTML(data.contactWhatsapp)}?text=${waText}` : '';
 
     let skillsHtml = '';
     if (data.skills && Array.isArray(data.skills) && data.skills.length > 0) {
@@ -95,6 +79,10 @@ function renderJobs(jobsToShow) {
     }
 
     let dutyHtml = data.dutyHours ? `<span class="duty-tag">⏰ ${safeDuty}</span>` : '';
+    
+    // ✨ यहाँ नया WhatsApp मैसेज सेट किया गया है (जिसमें बायोडाटा और एरिया की बात है)
+    const waText = encodeURIComponent(`नमस्ते, SecurityHire पर "${data.title}" (${data.company}, ${data.location}) की नौकरी देखी। मैं इस काम के लिए इच्छुक हूं और मैं फिलहाल ${data.location} एरिया में ही रह रहा हूं। मैं अपना बायोडाटा/रिज्यूम भेज रहा हूं, कृपया इसे देखें।`);
+    const waLink = data.contactWhatsapp ? `https://wa.me/91${escapeHTML(data.contactWhatsapp)}?text=${waText}` : '';
 
     let deleteBtnHtml = '';
     if (currentUser && data.postedBy === currentUser.uid) {
@@ -104,15 +92,9 @@ function renderJobs(jobsToShow) {
     const card = document.createElement('div');
     card.className = 'job-card';
     card.innerHTML = `
-      <div class="card-header">
-        <h3>${safeTitle}</h3>
-        ${dutyHtml}
-      </div>
-      <div class="company-info">🏢 ${safeCompany} <span class="dot">•</span> 📍 ${safeLocation}</div>
-      <div class="salary-info">
-        <span>🎯 ${safeExp || 'फ्रेशर'}</span>
-        <span>💰 ${safeSalary || 'सैलरी डिस्कस'}</span>
-      </div>
+      <div class="card-header"><h3>${safeTitle}</h3>${dutyHtml}</div>
+      <div class="company-info">🏢 ${safeCompany} • 📍 ${safeLocation}</div>
+      <div class="salary-info"><span>🎯 ${safeExp || '-'}</span><span>💰 ${safeSalary || '-'}</span></div>
       ${facilitiesHtml}
       ${data.description ? `<div class="desc">${safeDesc}</div>` : ''}
       ${skillsHtml}
@@ -125,14 +107,7 @@ function renderJobs(jobsToShow) {
 
 searchInput.addEventListener('input', (e) => {
   const searchTerm = e.target.value.toLowerCase();
-  const filteredJobs = allJobs.filter(job => {
-    return (
-      (job.title && job.title.toLowerCase().includes(searchTerm)) ||
-      (job.company && job.company.toLowerCase().includes(searchTerm)) ||
-      (job.location && job.location.toLowerCase().includes(searchTerm))
-    );
-  });
-  renderJobs(filteredJobs);
+  renderJobs(allJobs.filter(job => (job.title && job.title.toLowerCase().includes(searchTerm)) || (job.location && job.location.toLowerCase().includes(searchTerm))));
 });
 
 loadJobs();

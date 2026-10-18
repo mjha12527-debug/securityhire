@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, query, orderBy, deleteDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAkVn1rj2klXafSTkf30K6lsJNSJhu3Ryw",
@@ -13,115 +13,93 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
-// यहाँ हमने एडमिन की ईमेल आईडी डाल दी है
+const alertBox = document.getElementById('alertBox');
+const jobList = document.getElementById('jobList');
+
+// एडमिन की ईमेल लिस्ट
 const ADMIN_EMAILS = [
-  "mjha12527@gmail.com",
-  "second_admin@gmail.com"
+  "mjha12527@gmail.com",     // आपकी ईमेल
+  "second_admin@gmail.com"   // दूसरे एडमिन की ईमेल (बाद में बदल सकते हैं)
 ];
 
-const SKILLS = [
-  "सीसीटीवी (CCTV)", "फिजिकल गार्डिंग", "फायर एंड सेफ्टी", "क्राइसिस मैनेजमेंट", 
-  "एक्सेस कंट्रोल", "टीम सुपरविजन", "मटेरियल हैंडलिंग", "भूतपूर्व सैनिक (Ex-Servicemen)"
-];
-
-const skillsBox = document.getElementById('skillsBox');
-SKILLS.forEach(s => {
-  const l = document.createElement('label');
-  l.innerHTML = `<input type="checkbox" name="skills" value="${s}"> ${s}`;
-  skillsBox.appendChild(l);
-});
-
-const authBox = document.getElementById('authBox');
-const jobForm = document.getElementById('jobForm');
-const userBar = document.getElementById('userBar');
-
-onAuthStateChanged(auth, user => {
-  if (user) {
-    authBox.style.display = 'none';
-    jobForm.style.display = 'block';
-    userBar.innerHTML = `${user.email} • <a href="#" id="logout">लॉगआउट</a>`;
-    document.getElementById('logout').onclick = e => { e.preventDefault(); signOut(auth); };
+onAuthStateChanged(auth, (user) => {
+  if (user && ADMIN_EMAILS.includes(user.email)) {
+    alertBox.style.display = 'none';
+    loadAllJobs();
   } else {
-    authBox.style.display = 'block';
-    jobForm.style.display = 'none';
-    userBar.innerHTML = '';
+    alertBox.style.display = 'block';
+    jobList.innerHTML = '';
   }
 });
 
-document.getElementById('signupBtn').onclick = async () => {
-  const email = document.getElementById('email').value;
-  const pass = document.getElementById('pass').value;
-  if (!email || pass.length < 6) return alert('ईमेल और 6+ अक्षर का पासवर्ड डालें!');
-
-  const allowedDomains = ['@sisindia.com', '@group4india.com'];
-  // अगर ईमेल ऑफिशियल नहीं है और एडमिन भी नहीं है, तो रोक दें
-  if (!allowedDomains.some(domain => email.endsWith(domain)) && !ADMIN_EMAILS.includes(email)) {
-    return alert('❌ सिर्फ ऑफिशियल कंपनी के ईमेल से ही अकाउंट बन सकता है (जैसे: @sisindia.com)');
-  }
-  
-  try { await createUserWithEmailAndPassword(auth, email, pass); }
-  catch(e) { alert(e.message); }
-};
-
-document.getElementById('loginBtn').onclick = async () => {
-  const email = document.getElementById('email').value;
-  const pass = document.getElementById('pass').value;
-  try { await signInWithEmailAndPassword(auth, email, pass); }
-  catch(e) { alert(e.message); }
-};
-
-jobForm.onsubmit = async (e) => {
-  e.preventDefault();
-  const f = jobForm;
-
-  const facilities = [...document.querySelectorAll('input[name="facilities"]:checked')].map(x => x.value);
-  const skills = [...document.querySelectorAll('input[name="skills"]:checked')].map(x => x.value);
-  const phone = f.contactPhone.value.replace(/\D/g,'');
-  const wa = f.contactWhatsapp.value.replace(/\D/g,'');
-  
-  if (!phone && !wa && !f.contactEmail.value) {
-    return alert('कम से कम एक संपर्क (फोन/WhatsApp/ईमेल) दें');
-  }
-
-  const badWords = ['फीस', 'पैसा', 'पैसे', 'एडवांस', 'रजिस्ट्रेशन चार्ज', 'वीजा'];
-  const descLower = f.description.value.toLowerCase();
-  if (badWords.some(word => descLower.includes(word))) {
-    return alert('❌ नौकरी के विवरण में पैसों की मांग (जैसे फीस, एडवांस) नहीं की जा सकती।');
-  }
-
-  // 🚀 एडमिन की नौकरी सीधे लाइव होगी (approved), बाकी की पेंडिंग में जाएगी
-  let jobStatus = 'pending';
-  if (ADMIN_EMAILS.includes(auth.currentUser.email)) {
-    jobStatus = 'approved'; 
-  }
-
+async function loadAllJobs() {
   try {
-    await addDoc(collection(db, 'jobs'), {
-      title: f.title.value.trim(),
-      company: f.company.value.trim(),
-      location: f.location.value.trim(),
-      experience: f.experience.value.trim(),
-      salary: f.salary.value.trim(),
-      dutyHours: f.dutyHours.value.trim(),
-      facilities: facilities,
-      description: f.description.value.trim(),
-      skills: skills,
-      contactPhone: phone,
-      contactWhatsapp: wa,
-      contactEmail: f.contactEmail.value.trim(),
-      postedBy: auth.currentUser.uid,
-      postedAt: serverTimestamp(),
-      status: jobStatus 
-    });
-    
-    if (jobStatus === 'approved') {
-      alert('✅ नौकरी सीधे लाइव हो गई है! (एडमिन एक्सेस)');
-    } else {
-      alert('✅ आपकी नौकरी सबमिट हो गई है! एडमिन द्वारा अप्रूवल के बाद यह गार्ड्स को दिखेगी।');
+    const q = query(collection(db, "jobs"), orderBy("postedAt", "desc"));
+    const querySnapshot = await getDocs(q);
+    jobList.innerHTML = ''; 
+
+    if (querySnapshot.empty) {
+      jobList.innerHTML = '<p class="empty-state">डेटाबेस में कोई नौकरी नहीं है।</p>';
+      return;
     }
-    jobForm.reset();
-  } catch(e) { alert('गलती: ' + e.message); }
-};
+
+    querySnapshot.forEach((docSnap) => {
+      const data = docSnap.data();
+      
+      // स्टेटस के हिसाब से रंग और बटन
+      let statusHtml = '';
+      let approveBtn = '';
+      if (data.status === 'pending') {
+        statusHtml = `<p style="color: #ffa500; font-weight: bold;">स्थिति: पेंडिंग (Pending)</p>`;
+        approveBtn = `<button onclick="approveJob('${docSnap.id}')" style="background:#4CAF50; color:#fff; border:none; padding:12px; border-radius:10px; width:100%; margin-top:10px; font-size:15px; font-weight:bold; cursor:pointer;">✅ नौकरी अप्रूव करें</button>`;
+      } else if (data.status === 'approved') {
+        statusHtml = `<p style="color: #4CAF50; font-weight: bold;">स्थिति: लाइव (Approved)</p>`;
+      } else {
+        statusHtml = `<p style="color: #9fc0e8;">स्थिति: ${data.status || 'पुरानी नौकरी'}</p>`;
+      }
+
+      const card = document.createElement('div');
+      card.className = 'job-card';
+      card.innerHTML = `
+        <h3>${data.title || 'बिना नाम'}</h3>
+        <p>🏢 कंपनी: ${data.company || '-'}</p>
+        <p>📍 लोकेशन: ${data.location || '-'}</p>
+        ${statusHtml}
+        ${approveBtn}
+        <button onclick="adminDeleteJob('${docSnap.id}')" class="btn-delete" style="margin-top:10px;">🗑️ नौकरी डिलीट करें</button>
+      `;
+      jobList.appendChild(card);
+    });
+  } catch (error) {
+    // 🚨 यह हमें असली एरर बताएगा
+    alert("एडमिन एरर: " + error.message); 
+    jobList.innerHTML = '<p class="empty-state">नौकरियाँ लोड करने में गलती आई।</p>';
+  }
+}
+
+// अप्रूव करने का फंक्शन
+window.approveJob = async function(jobId) {
+  try {
+    const jobRef = doc(db, "jobs", jobId);
+    await updateDoc(jobRef, { status: 'approved' });
+    alert("✅ नौकरी अप्रूव हो गई! अब यह गार्ड्स को दिखेगी।");
+    loadAllJobs(); 
+  } catch (error) {
+    alert("अप्रूव करने में गलती आई: " + error.message);
+  }
+}
+
+window.adminDeleteJob = async function(jobId) {
+  if (confirm("क्या आप सच में यह नौकरी डिलीट करना चाहते हैं?")) {
+    try {
+      await deleteDoc(doc(db, "jobs", jobId));
+      alert("✅ नौकरी सफलतापूर्वक डिलीट हो गई!");
+      loadAllJobs(); 
+    } catch (error) {
+      alert("डिलीट करने में गलती आई: " + error.message);
+    }
+  }
+}

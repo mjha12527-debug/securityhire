@@ -46,14 +46,14 @@ onAuthStateChanged(auth, (user) => { currentUser = user; });
 
 async function loadJobs() {
   try {
-    // ✨ यहाँ हमने सिर्फ 'approved' नौकरियां मंगाने का फिल्टर लगाया है
     const q = query(collection(db, "jobs"), where("status", "==", "approved"), orderBy("postedAt", "desc"));
     const querySnapshot = await getDocs(q);
     allJobs = []; 
     querySnapshot.forEach((doc) => { allJobs.push({ id: doc.id, ...doc.data() }); });
     renderJobs(allJobs); 
   } catch (error) {
-    // अगर पुरानी नौकरियां 'status' के बिना हैं, तो वो नहीं दिखेंगी, इसलिए एरर आ सकता है
+    // 🚨 यह हमें असली एरर बताएगा
+    alert("असली एरर: " + error.message); 
     jobList.innerHTML = '<p style="text-align:center; color:red; margin-top:30px;">नौकरियाँ लोड करने में गलती आई।</p>';
   }
 }

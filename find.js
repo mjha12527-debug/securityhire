@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-import { getFirestore, collection, getDocs, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, query, where, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -21,33 +21,23 @@ const searchInput = document.getElementById('searchInput');
 let allJobs = []; 
 let currentUser = null;
 
-// 🛡️ XSS सुरक्षा कवच
 function escapeHTML(str) {
   if (!str) return '';
   return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
 }
 
-// 🕒 तारीख गिनने वाला फंक्शन (Time Ago)
 function getTimeAgo(postedAt) {
   if (!postedAt) return 'हाल ही में';
-  
-  // Firebase का टाइमस्टैम्प डेट में बदलें
   const date = postedAt.toDate ? postedAt.toDate() : new Date(postedAt);
-  const now = new Date();
-  const diffInSeconds = Math.floor((now - date) / 1000);
-
+  const diffInSeconds = Math.floor((new Date() - date) / 1000);
   if (diffInSeconds < 60) return 'अभी-अभी';
-  
   const diffInMinutes = Math.floor(diffInSeconds / 60);
   if (diffInMinutes < 60) return `${diffInMinutes} मिनट पहले`;
-  
   const diffInHours = Math.floor(diffInMinutes / 60);
   if (diffInHours < 24) return 'आज डाली गई';
-  
   const diffInDays = Math.floor(diffInHours / 24);
   if (diffInDays === 1) return 'कल डाली गई';
   if (diffInDays < 30) return `${diffInDays} दिन पहले`;
-  
   const diffInMonths = Math.floor(diffInDays / 30);
   return `${diffInMonths} महीने पहले`;
 }
@@ -56,12 +46,14 @@ onAuthStateChanged(auth, (user) => { currentUser = user; });
 
 async function loadJobs() {
   try {
-    const q = query(collection(db, "jobs"), orderBy("postedAt", "desc"));
+    // ✨ यहाँ हमने सिर्फ 'approved' नौकरियां मंगाने का फिल्टर लगाया है
+    const q = query(collection(db, "jobs"), where("status", "==", "approved"), orderBy("postedAt", "desc"));
     const querySnapshot = await getDocs(q);
     allJobs = []; 
     querySnapshot.forEach((doc) => { allJobs.push({ id: doc.id, ...doc.data() }); });
     renderJobs(allJobs); 
   } catch (error) {
+    // अगर पुरानी नौकरियां 'status' के बिना हैं, तो वो नहीं दिखेंगी, इसलिए एरर आ सकता है
     jobList.innerHTML = '<p style="text-align:center; color:red; margin-top:30px;">नौकरियाँ लोड करने में गलती आई।</p>';
   }
 }
@@ -91,8 +83,6 @@ function renderJobs(jobsToShow) {
     const safeSalary = escapeHTML(data.salary);
     const safeDuty = escapeHTML(data.dutyHours);
     const safeDesc = escapeHTML(data.description);
-    
-    // यहाँ तारीख निकाली जा रही है
     const timeAgoText = getTimeAgo(data.postedAt);
 
     let skillsHtml = '';

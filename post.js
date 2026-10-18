@@ -16,16 +16,9 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// यहाँ हमने स्किल्स की लिस्ट को छोटा और सटीक कर दिया है
 const SKILLS = [
-  "सीसीटीवी (CCTV)", 
-  "फिजिकल गार्डिंग", 
-  "फायर एंड सेफ्टी", 
-  "क्राइसिस मैनेजमेंट", 
-  "एक्सेस कंट्रोल", 
-  "टीम सुपरविजन", 
-  "मटेरियल हैंडलिंग", 
-  "भूतपूर्व सैनिक (Ex-Servicemen)"
+  "सीसीटीवी (CCTV)", "फिजिकल गार्डिंग", "फायर एंड सेफ्टी", "क्राइसिस मैनेजमेंट", 
+  "एक्सेस कंट्रोल", "टीम सुपरविजन", "मटेरियल हैंडलिंग", "भूतपूर्व सैनिक (Ex-Servicemen)"
 ];
 
 const skillsBox = document.getElementById('skillsBox');
@@ -43,10 +36,8 @@ onAuthStateChanged(auth, user => {
   if (user) {
     authBox.style.display = 'none';
     jobForm.style.display = 'block';
-    userBar.innerHTML = `<span style="color:#fff;">${user.email}</span> <a href="#" id="logout">लॉगआउट</a>`;
-    document.getElementById('logout').onclick = e => {
-      e.preventDefault(); signOut(auth);
-    };
+    userBar.innerHTML = `${user.email} • <a href="#" id="logout">लॉगआउट</a>`;
+    document.getElementById('logout').onclick = e => { e.preventDefault(); signOut(auth); };
   } else {
     authBox.style.display = 'block';
     jobForm.style.display = 'none';
@@ -81,7 +72,6 @@ jobForm.onsubmit = async (e) => {
 
   const facilities = [...document.querySelectorAll('input[name="facilities"]:checked')].map(x => x.value);
   const skills = [...document.querySelectorAll('input[name="skills"]:checked')].map(x => x.value);
-
   const phone = f.contactPhone.value.replace(/\D/g,'');
   const wa = f.contactWhatsapp.value.replace(/\D/g,'');
   
@@ -96,6 +86,7 @@ jobForm.onsubmit = async (e) => {
   }
 
   try {
+    // ✨ यहाँ हमने status: 'pending' जोड़ दिया है
     await addDoc(collection(db, 'jobs'), {
       title: f.title.value.trim(),
       company: f.company.value.trim(),
@@ -111,9 +102,9 @@ jobForm.onsubmit = async (e) => {
       contactEmail: f.contactEmail.value.trim(),
       postedBy: auth.currentUser.uid,
       postedAt: serverTimestamp(),
-      isActive: true
+      status: 'pending' // <--- नया अपडेट: नौकरी पहले पेंडिंग में जाएगी
     });
-    alert('✅ नौकरी पोस्ट हो गई!');
+    alert('✅ आपकी नौकरी सबमिट हो गई है! एडमिन द्वारा अप्रूवल के बाद यह गार्ड्स को दिखेगी।');
     jobForm.reset();
   } catch(e) { alert('गलती: ' + e.message); }
 };

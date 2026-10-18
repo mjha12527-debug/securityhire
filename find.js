@@ -27,6 +27,31 @@ function escapeHTML(str) {
   return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
 }
 
+// 🕒 तारीख गिनने वाला फंक्शन (Time Ago)
+function getTimeAgo(postedAt) {
+  if (!postedAt) return 'हाल ही में';
+  
+  // Firebase का टाइमस्टैम्प डेट में बदलें
+  const date = postedAt.toDate ? postedAt.toDate() : new Date(postedAt);
+  const now = new Date();
+  const diffInSeconds = Math.floor((now - date) / 1000);
+
+  if (diffInSeconds < 60) return 'अभी-अभी';
+  
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) return `${diffInMinutes} मिनट पहले`;
+  
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) return 'आज डाली गई';
+  
+  const diffInDays = Math.floor(diffInHours / 24);
+  if (diffInDays === 1) return 'कल डाली गई';
+  if (diffInDays < 30) return `${diffInDays} दिन पहले`;
+  
+  const diffInMonths = Math.floor(diffInDays / 30);
+  return `${diffInMonths} महीने पहले`;
+}
+
 onAuthStateChanged(auth, (user) => { currentUser = user; });
 
 async function loadJobs() {
@@ -66,6 +91,9 @@ function renderJobs(jobsToShow) {
     const safeSalary = escapeHTML(data.salary);
     const safeDuty = escapeHTML(data.dutyHours);
     const safeDesc = escapeHTML(data.description);
+    
+    // यहाँ तारीख निकाली जा रही है
+    const timeAgoText = getTimeAgo(data.postedAt);
 
     let skillsHtml = '';
     if (data.skills && Array.isArray(data.skills) && data.skills.length > 0) {
@@ -80,7 +108,6 @@ function renderJobs(jobsToShow) {
 
     let dutyHtml = data.dutyHours ? `<span class="duty-tag">⏰ ${safeDuty}</span>` : '';
     
-    // ✨ यहाँ नया WhatsApp मैसेज सेट किया गया है (जिसमें बायोडाटा और एरिया की बात है)
     const waText = encodeURIComponent(`नमस्ते, SecurityHire पर "${data.title}" (${data.company}, ${data.location}) की नौकरी देखी। मैं इस काम के लिए इच्छुक हूं और मैं फिलहाल ${data.location} एरिया में ही रह रहा हूं। मैं अपना बायोडाटा/रिज्यूम भेज रहा हूं, कृपया इसे देखें।`);
     const waLink = data.contactWhatsapp ? `https://wa.me/91${escapeHTML(data.contactWhatsapp)}?text=${waText}` : '';
 
@@ -98,6 +125,7 @@ function renderJobs(jobsToShow) {
       ${facilitiesHtml}
       ${data.description ? `<div class="desc">${safeDesc}</div>` : ''}
       ${skillsHtml}
+      <div style="font-size: 12px; color: #9fc0e8; margin-bottom: 8px;">🕒 ${timeAgoText}</div>
       ${waLink ? `<a href="${waLink}" target="_blank" class="btn-wa">WhatsApp पर बात करें</a>` : ''}
       ${deleteBtnHtml}
     `;

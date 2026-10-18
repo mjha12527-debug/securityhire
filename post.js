@@ -20,7 +20,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// सिर्फ़ UI की सुविधा के लिए। असली सुरक्षा Firestore Rules में है।
+// सिर्फ़ बटन/संदेश के लिए। असली अधिकार Rules के UID से मिलता है।
 const ADMIN_EMAILS = ["mjha12527@gmail.com"];
 
 const COMPANY_RE = /^[^\s@]+@(sisindia|group4india)\.com$/;
@@ -32,7 +32,6 @@ const SKILLS = [
   "एक्सेस कंट्रोल", "टीम सुपरविजन", "मटेरियल हैंडलिंग", "भूतपूर्व सैनिक (Ex-Servicemen)"
 ];
 
-// Rules वाली लिस्ट से बड़ी रखें, ताकि क्लाइंट पहले पकड़ ले
 const SCAM_WORDS = [
   'fee', 'fees', 'deposit', 'advance', 'registration', 'paisa', 'paise', 'visa',
   'पैसा', 'पैसे', 'फीस', 'फ़ीस', 'एडवांस', 'डिपॉजिट', 'रजिस्ट्रेशन',
@@ -58,7 +57,9 @@ const authBox = $('authBox');
 const jobForm = $('jobForm');
 const userBar = $('userBar');
 
-// ---------- संदेश (alert की जगह) ----------
+const isAdminEmail = em => ADMIN_EMAILS.includes((em || '').toLowerCase());
+
+// ---------- संदेश ----------
 function showMsg(text, ok = false) {
   let box = $('msg');
   if (!box) {
@@ -74,7 +75,7 @@ function showMsg(text, ok = false) {
   box.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-// ---------- स्किल्स (innerHTML के बिना) ----------
+// ---------- स्किल्स ----------
 SKILLS.forEach(s => {
   const label = document.createElement('label');
   const cb = document.createElement('input');
@@ -105,7 +106,7 @@ function renderUserBar(user) {
   out.addEventListener('click', e => { e.preventDefault(); signOut(auth); });
   userBar.append(out);
 
-  if (!user.emailVerified) {
+  if (!user.emailVerified && !isAdminEmail(user.email)) {
     const wrap = document.createElement('div');
     wrap.append(
       makeBtn('वेरिफ़िकेशन मेल दोबारा भेजें', async () => {
@@ -138,13 +139,17 @@ $('signupBtn').addEventListener('click', async () => {
   const pass = $('pass').value;
   if (!EMAIL_RE.test(email)) return showMsg('सही ईमेल डालें।');
   if (pass.length < 8) return showMsg('पासवर्ड कम से कम 8 अक्षर का रखें।');
-  if (!COMPANY_RE.test(email) && !ADMIN_EMAILS.includes(email)) {
+  if (!COMPANY_RE.test(email) && !isAdminEmail(email)) {
     return showMsg('❌ सिर्फ ऑफिशियल कंपनी के ईमेल से ही अकाउंट बन सकता है (जैसे: @sisindia.com)');
   }
   try {
     const cred = await createUserWithEmailAndPassword(auth, email, pass);
-    await sendEmailVerification(cred.user);
-    showMsg('✅ अकाउंट बन गया! ईमेल पर वेरिफ़िकेशन लिंक भेजा गया है। उसे दबाने के बाद "मैंने वेरिफ़ाई कर लिया" बटन दबाएँ, तभी नौकरी पोस्ट होगी।', true);
+    if (isAdminEmail(email)) {
+      showMsg('✅ एडमिन अकाउंट बन गया।', true);
+    } else {
+      await sendEmailVerification(cred.user);
+      showMsg('✅ अकाउंट बन गया! ईमेल पर वेरिफ़िकेशन लिंक भेजा गया है। उसे दबाने के बाद "मैंने वेरिफ़ाई कर लिया" बटन दबाएँ, तभी नौकरी पोस्ट होगी।', true);
+    }
   } catch (e) { showMsg(errText(e)); }
 });
 
@@ -196,12 +201,16 @@ jobForm.addEventListener('submit', async e => {
     let user = auth.currentUser;
     if (!user) return showMsg('पहले लॉगिन करें।');
 
-    // ताज़ा वेरिफ़िकेशन स्थिति और टोकन (Rules email_verified टोकन से पढ़ते हैं)
-    if (!user.emailVerified) { await user.reload(); user = auth.currentUser; }
-    if (!user.emailVerified) {
-      return showMsg('❌ आपका ईमेल वेरिफ़ाई नहीं है। इनबॉक्स (और स्पैम) में लिंक दबाएँ, फिर "मैंने वेरिफ़ाई कर लिया" दबाएँ।');
+    const isAdmin = isAdminEmail(user.email);
+
+    // एडमिन को वेरिफ़िकेशन नहीं चाहिए; कंपनी को चाहिए
+    if (!isAdmin) {
+      if (!user.emailVerified) { await user.reload(); user = auth.currentUser; }
+      if (!user.emailVerified) {
+        return showMsg('❌ आपका ईमेल वेरिफ़ाई नहीं है। इनबॉक्स (और स्पैम) में लिंक दबाएँ, फिर "मैंने वेरिफ़ाई कर लिया" दबाएँ।');
+      }
+      await user.getIdToken(true);
     }
-    await user.getIdToken(true);
 
     const f = jobForm.elements;
     const val = n => (f[n] ? f[n].value : '').trim();
@@ -233,8 +242,6 @@ jobForm.addEventListener('submit', async e => {
     const facilities = [...document.querySelectorAll('input[name="facilities"]:checked')].map(x => x.value).slice(0, 10);
     const skills = [...document.querySelectorAll('input[name="skills"]:checked')].map(x => x.value).slice(0, 10);
 
-    const isAdmin = ADMIN_EMAILS.includes(user.email.toLowerCase());
-
     await addDoc(collection(db, 'jobs'), {
       title, company, location, experience, salary, dutyHours,
       facilities, description, skills,
@@ -256,6 +263,4 @@ jobForm.addEventListener('submit', async e => {
     busy = false;
     if (btn) btn.disabled = false;
   }
-})	
-	
-
+});

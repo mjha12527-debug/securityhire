@@ -21,7 +21,16 @@ const searchInput = document.getElementById('searchInput');
 let allJobs = []; 
 let currentUser = null;
 
-// चेक करें कि यूजर लॉगिन है या नहीं
+// 🛡️ XSS सुरक्षा कवच (हैकर्स के कोड को बेअसर करने के लिए)
+function escapeHTML(str) {
+  if (!str) return '';
+  return str.replace(/[&<>'"]/g, 
+    tag => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+    }[tag] || tag)
+  );
+}
+
 onAuthStateChanged(auth, (user) => {
   currentUser = user;
 });
@@ -35,7 +44,6 @@ async function loadJobs() {
     querySnapshot.forEach((doc) => {
       allJobs.push({ id: doc.id, ...doc.data() });
     });
-
     renderJobs(allJobs); 
   } catch (error) {
     console.error("Error loading jobs: ", error);
@@ -43,13 +51,12 @@ async function loadJobs() {
   }
 }
 
-// डिलीट करने का फंक्शन (ग्लोबल बनाया गया है ताकि बटन से कॉल हो सके)
 window.deleteJob = async function(jobId) {
   if (confirm("क्या आप सच में यह नौकरी डिलीट करना चाहते हैं?")) {
     try {
       await deleteDoc(doc(db, "jobs", jobId));
       alert("✅ नौकरी डिलीट हो गई!");
-      loadJobs(); // लिस्ट फिर से लोड करें
+      loadJobs(); 
     } catch (error) {
       alert("डिलीट करने में गलती आई: " + error.message);
     }
@@ -60,41 +67,54 @@ function renderJobs(jobsToShow) {
   jobList.innerHTML = ''; 
 
   if (jobsToShow.length === 0) {
-    jobList.innerHTML = '<p class="loading">कोई नौकरी नहीं मिली।</p>';
+    jobList.innerHTML = '<div class="empty-state">🔍<br><br>कोई नौकरी नहीं मिली।</div>';
     return;
   }
 
   jobsToShow.forEach((data) => {
+    const safeTitle = escapeHTML(data.title);
+    const safeCompany = escapeHTML(data.company);
+    const safeLocation = escapeHTML(data.location);
+    const safeExp = escapeHTML(data.experience);
+    const safeSalary = escapeHTML(data.salary);
+    const safeDuty = escapeHTML(data.dutyHours);
+    const safeDesc = escapeHTML(data.description);
+
     const waText = encodeURIComponent(`नमस्ते, SecurityHire पर "${data.title}" (${data.company}) की नौकरी देखी। क्या यह अभी खुली है?`);
-    const waLink = data.contactWhatsapp ? `https://wa.me/91${data.contactWhatsapp}?text=${waText}` : '';
+    const waLink = data.contactWhatsapp ? `https://wa.me/91${escapeHTML(data.contactWhatsapp)}?text=${waText}` : '';
 
     let skillsHtml = '';
     if (data.skills && Array.isArray(data.skills) && data.skills.length > 0) {
-      skillsHtml = `<div class="skills-list">${data.skills.map(s => `<span>${s}</span>`).join('')}</div>`;
+      skillsHtml = `<div class="skills-list">${data.skills.map(s => `<span>${escapeHTML(s)}</span>`).join('')}</div>`;
     }
 
     let facilitiesHtml = '';
     if (data.facilities && data.facilities.length > 0) {
-      facilitiesHtml = `<div class="meta" style="color: #4CAF50; margin-top:5px;">✅ सुविधाएं: ${data.facilities.join(', ')}</div>`;
+      const safeFacilities = data.facilities.map(f => escapeHTML(f)).join(', ');
+      facilitiesHtml = `<div class="facilities-text">✅ सुविधाएं: ${safeFacilities}</div>`;
     }
 
-    let dutyHtml = data.dutyHours ? `<div class="meta">⏰ ड्यूटी: ${data.dutyHours}</div>` : '';
+    let dutyHtml = data.dutyHours ? `<span class="duty-tag">⏰ ${safeDuty}</span>` : '';
 
-    // चेक करें कि क्या यह नौकरी उसी यूजर ने पोस्ट की है जो अभी लॉगिन है
     let deleteBtnHtml = '';
     if (currentUser && data.postedBy === currentUser.uid) {
-      deleteBtnHtml = `<button onclick="deleteJob('${data.id}')" style="background:#d32f2f; color:#fff; border:none; padding:12px; border-radius:10px; width:100%; margin-top:10px; font-size:16px; font-weight:bold; cursor:pointer;">🗑️ यह नौकरी हटाएं (Delete)</button>`;
+      deleteBtnHtml = `<button onclick="deleteJob('${data.id}')" class="btn-delete">🗑️ यह नौकरी हटाएं</button>`;
     }
 
     const card = document.createElement('div');
     card.className = 'job-card';
     card.innerHTML = `
-      <h3>${data.title}</h3>
-      <div class="meta">🏢 ${data.company} • 📍 ${data.location}</div>
-      <div class="meta">🎯 अनुभव: ${data.experience || '-'} ${data.salary ? '• 💰 ' + data.salary : ''}</div>
-      ${dutyHtml}
+      <div class="card-header">
+        <h3>${safeTitle}</h3>
+        ${dutyHtml}
+      </div>
+      <div class="company-info">🏢 ${safeCompany} <span class="dot">•</span> 📍 ${safeLocation}</div>
+      <div class="salary-info">
+        <span>🎯 ${safeExp || 'फ्रेशर'}</span>
+        <span>💰 ${safeSalary || 'सैलरी डिस्कस'}</span>
+      </div>
       ${facilitiesHtml}
-      ${data.description ? `<div class="desc">${data.description}</div>` : ''}
+      ${data.description ? `<div class="desc">${safeDesc}</div>` : ''}
       ${skillsHtml}
       ${waLink ? `<a href="${waLink}" target="_blank" class="btn-wa">WhatsApp पर बात करें</a>` : ''}
       ${deleteBtnHtml}
@@ -116,5 +136,3 @@ searchInput.addEventListener('input', (e) => {
 });
 
 loadJobs();
-	
-

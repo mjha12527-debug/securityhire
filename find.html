@@ -5,34 +5,66 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>नौकरी खोजें — SecurityHire</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-  body { background: #0b1220; color: #fff; padding-bottom: 40px; }
-  header { padding: 18px; background: #1a3c6e; text-align: center; position: relative; }
-  header h1 { font-size: 20px; }
-  .back { position: absolute; left: 15px; top: 20px; color: #9fc0e8; text-decoration: none; font-size: 14px; }
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
   
-  #jobList { max-width: 500px; margin: 15px auto; padding: 0 10px; }
-  .job-card { background: #141e30; border: 1px solid #24334d; border-radius: 12px; padding: 15px; margin-bottom: 15px; }
-  .job-card h3 { color: #ffa500; font-size: 18px; margin-bottom: 5px; }
-  .job-card .meta { color: #9fc0e8; font-size: 14px; margin: 3px 0; }
-  .job-card .desc { font-size: 14px; margin: 10px 0; color: #ccc; }
-  .skills-list { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
-  .skills-list span { background: #0e1729; border: 1px solid #2b3b55; padding: 4px 8px; border-radius: 12px; font-size: 12px; color: #9fc0e8; }
-  .btn-wa { display: block; text-align: center; background: #25D366; color: #fff; text-decoration: none; padding: 10px; border-radius: 8px; font-weight: bold; margin-top: 10px; }
-  .loading { text-align: center; color: #9fc0e8; margin-top: 30px; }
-  input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #2b3b55; background: #0e1729; color: #fff; font-size: 15px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+  body { background: #0b1220; color: #fff; padding-bottom: 40px; -webkit-font-smoothing: antialiased; }
+  
+  /* Header */
+  header { padding: 20px 15px; background: linear-gradient(135deg, #0f2a4a, #1a3c6e); text-align: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+  header h1 { font-size: 20px; color: #fff; font-weight: 600; letter-spacing: 0.5px; }
+  .back { position: absolute; left: 15px; top: 22px; color: #9fc0e8; text-decoration: none; font-size: 14px; font-weight: 500; }
+  
+  /* Search Bar */
+  .search-container { max-width: 500px; margin: 20px auto 10px; padding: 0 15px; position: relative; }
+  .search-container input { width: 100%; padding: 15px 20px 15px 45px; border-radius: 12px; border: 1px solid #2b3b55; background: #141e30; color: #fff; font-size: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: 0.3s; }
+  .search-container input:focus { outline: none; border-color: #1e6fd9; box-shadow: 0 4px 15px rgba(30,111,217,0.3); }
+  .search-icon { position: absolute; left: 28px; top: 15px; font-size: 18px; color: #9fc0e8; }
+
+  /* Job Cards */
+  #jobList { max-width: 500px; margin: 15px auto; padding: 0 15px; }
+  .job-card { background: #141e30; border: 1px solid #24334d; border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 6px 15px rgba(0,0,0,0.3); transition: transform 0.2s; }
+  .job-card:hover { transform: translateY(-2px); }
+  
+  .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+  .card-header h3 { color: #ffa500; font-size: 19px; font-weight: 700; flex: 1; padding-right: 10px; line-height: 1.3; }
+  
+  .duty-tag { background: rgba(30, 111, 217, 0.15); color: #5fa8ff; padding: 5px 10px; border-radius: 8px; font-size: 12px; font-weight: 600; white-space: nowrap; border: 1px solid rgba(30,111,217,0.3); }
+  
+  .company-info { color: #9fc0e8; font-size: 14px; margin-bottom: 12px; font-weight: 500; }
+  .dot { margin: 0 4px; color: #5a6b85; }
+  
+  .salary-info { display: flex; gap: 15px; background: #0e1729; padding: 10px 15px; border-radius: 10px; margin-bottom: 12px; font-size: 14px; color: #e6edf6; font-weight: 500; }
+  
+  .facilities-text { color: #4CAF50; font-size: 13px; font-weight: 600; margin-bottom: 10px; background: rgba(76, 175, 80, 0.1); padding: 8px 10px; border-radius: 8px; display: inline-block; }
+  
+  .desc { font-size: 14px; color: #b0c4de; margin-bottom: 15px; line-height: 1.5; }
+  
+  .skills-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+  .skills-list span { background: #1e293b; border: 1px solid #334155; padding: 6px 12px; border-radius: 20px; font-size: 12px; color: #cbd5e1; font-weight: 500; }
+  
+  .btn-wa { display: flex; justify-content: center; align-items: center; gap: 8px; background: linear-gradient(135deg, #25D366, #128C7E); color: #fff; text-decoration: none; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 15px; margin-top: 10px; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3); transition: 0.2s; }
+  .btn-wa:active { transform: scale(0.98); }
+  
+  .btn-delete { display: flex; justify-content: center; align-items: center; gap: 8px; background: #d32f2f; color: #fff; border: none; padding: 14px; border-radius: 12px; width: 100%; margin-top: 10px; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3); transition: 0.2s; }
+  .btn-delete:active { transform: scale(0.98); background: #b71c1c; }
+  
+  .empty-state { text-align: center; color: #5a6b85; font-size: 16px; margin-top: 50px; font-weight: 500; }
 </style>
 </head>
 <body>
-<header><h1>🔍 नौकरी खोजें</h1><a href="index.html" class="back">← होम</a></header>
+<header>
+  <a href="index.html" class="back">← होम</a>
+  <h1>🔍 नौकरी खोजें</h1>
+</header>
 
-<!-- सर्च बार -->
-<div style="max-width: 500px; margin: 15px auto 0; padding: 0 10px;">
-  <input type="text" id="searchInput" placeholder="🔍 पद, कंपनी या शहर खोजें (जैसे: पुणे, गार्ड)...">
+<div class="search-container">
+  <span class="search-icon">🔍</span>
+  <input type="text" id="searchInput" placeholder="पद, कंपनी या शहर खोजें...">
 </div>
 
 <div id="jobList">
-  <p class="loading">नौकरियाँ लोड हो रही हैं...</p>
+  <p class="empty-state">नौकरियाँ लोड हो रही हैं...</p>
 </div>
 
 <script type="module" src="find.js"></script>

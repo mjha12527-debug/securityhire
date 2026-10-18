@@ -8,11 +8,9 @@
 <!-- SEO और गूगल के लिए तेल मसाला -->
 <meta name="description" content="SecurityHire पर पुणे, बारामती और सोलापुर में सिक्योरिटी गार्ड, सुपरवाइजर और सीसीटीवी ऑपरेटर की सरकारी और प्राइवेट नौकरियां खोजें। बिना किसी फीस के सीधे कंपनियों से जुड़ें।">
 <meta name="keywords" content="Security Guard Job in Pune, Security Guard Job Baramati, Solapur Security Jobs, SIS India Jobs, Security Supervisor Vacancy, CCTV Operator Job">
-<meta name="author" content="SecurityHire">
 <meta property="og:title" content="SecurityHire - सिक्योरिटी नौकरियां">
 <meta property="og:description" content="पुणे, बारामती और सोलापुर में सिक्योरिटी गार्ड की नौकरी खोजें।">
 <meta property="og:image" content="https://mjha12527-debug.github.io/securityhire/logo.png">
-<meta property="og:url" content="https://mjha12527-debug.github.io/securityhire/">
 
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="logo.png">
@@ -33,12 +31,16 @@
   .area-card h4 { color: #ffa500; font-size: 14px; margin-bottom: 6px; font-weight: bold; }
   .area-card p { color: #9fc0e8; font-size: 13px; line-height: 1.5; margin-bottom: 0; }
   
-  /* बटन */
+  /* मुख्य बटन */
   .btn { display: block; width: 100%; max-width: 300px; padding: 16px; margin: 10px 0; text-decoration: none; color: #fff; border-radius: 10px; font-size: 17px; font-weight: bold; transition: 0.2s; }
   .btn-primary { background-color: #1e6fd9; }
   .btn-primary:active { background-color: #1655a8; }
   .btn-secondary { background-color: #2b3b55; border: 1px solid #1e6fd9; }
   .btn-secondary:active { background-color: #1a2638; }
+  
+  /* नया शेयर बटन (WhatsApp के रंग में) */
+  .btn-share { background-color: transparent; border: 2px solid #25D366; color: #25D366; margin-top: 15px; font-size: 15px; padding: 12px; }
+  .btn-share:active { background-color: #25D366; color: #fff; }
 </style>
 </head>
 <body>
@@ -57,5 +59,15 @@
 
   <a href="post.html" class="btn btn-primary">📢 नौकरी डालें (Employer)</a>
   <a href="find.html" class="btn btn-secondary">🔍 नौकरी खोजें (Job Seeker)</a>
+  
+  <!-- नया शेयर बटन -->
+  <a href="#" onclick="shareApp()" class="btn btn-share">📲 दोस्तों को भेजें (Share App)</a>
+
+  <script>
+    function shareApp() {
+      const msg = "नमस्ते, SecurityHire पर पुणे, बारामती और सोलापुर में सिक्योरिटी गार्ड की नई नौकरियां आ रही हैं। आप भी यह ऐप देखें: https://mjha12527-debug.github.io/securityhire/";
+      window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
+    }
+  </script>
 </body>
 </html>

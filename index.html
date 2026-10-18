@@ -38,7 +38,7 @@
   .btn-secondary { background-color: #2b3b55; border: 1px solid #1e6fd9; }
   .btn-secondary:active { background-color: #1a2638; }
   
-  /* नया शेयर बटन (WhatsApp के रंग में) */
+  /* शेयर बटन (WhatsApp के रंग में) */
   .btn-share { background-color: transparent; border: 2px solid #25D366; color: #25D366; margin-top: 15px; font-size: 15px; padding: 12px; }
   .btn-share:active { background-color: #25D366; color: #fff; }
 </style>
@@ -60,7 +60,7 @@
   <a href="post.html" class="btn btn-primary">📢 नौकरी डालें (Employer)</a>
   <a href="find.html" class="btn btn-secondary">🔍 नौकरी खोजें (Job Seeker)</a>
   
-  <!-- नया शेयर बटन -->
+  <!-- शेयर बटन -->
   <a href="#" onclick="shareApp()" class="btn btn-share">📲 दोस्तों को भेजें (Share App)</a>
 
   <script>
@@ -68,6 +68,25 @@
       const msg = "नमस्ते, SecurityHire पर पुणे, बारामती और सोलापुर में सिक्योरिटी गार्ड की नई नौकरियां आ रही हैं। आप भी यह ऐप देखें: https://mjha12527-debug.github.io/securityhire/";
       window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank");
     }
+  </script>
+
+  <!-- Google Analytics (विज़िटर ट्रैकिंग) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-analytics.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAkVn1rj2klXafSTkf30K6lsJNSJhu3Ryw",
+      authDomain: "securityhire-fc26f.firebaseapp.com",
+      projectId: "securityhire-fc26f",
+      storageBucket: "securityhire-fc26f.firebasestorage.app",
+      messagingSenderId: "234313705418",
+      appId: "1:234313705418:web:4fce21c507c5ab62f01133",
+      measurementId: "G-84P3Q1NCY7"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
   </script>
 </body>
 </html>

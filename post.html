@@ -3,6 +3,178 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<title>नौकरी डालें - SecurityHire</title>
+
+<meta name="google-site-verification" content="c5BKbJ1JwhErZBmkNowyEthsh-8SVExbUUx9ZCqr5Po" />
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="logo.png">
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+  body { background: #0b1220; color: #fff; padding: 20px; padding-bottom: 50px; }
+  
+  /* हेडर */
+  header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #2b3b55; }
+  .back-btn { color: #fff; text-decoration: none; font-size: 15px; }
+  header h1 { font-size: 18px; color: #ffa500; }
+
+  /* अलर्ट मैसेज */
+  .alert { background-color: rgba(211, 47, 47, 0.1); border: 1px solid #d32f2f; color: #ff6b6b; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; text-align: center; display: none; }
+
+  /* फॉर्म कार्ड */
+  .card { background: #141e30; border: 1px solid #2b3b55; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+  .card-title { color: #ffa500; font-size: 16px; margin-bottom: 15px; font-weight: bold; display: flex; align-items: center; gap: 8px; }
+
+  /* इनपुट फील्ड्स */
+  .form-group { margin-bottom: 15px; }
+  .form-group label { display: block; font-size: 14px; color: #9fc0e8; margin-bottom: 6px; }
+  input[type="text"], input[type="number"], input[type="email"], input[type="password"], select, textarea {
+    width: 100%; padding: 12px; background: #0b1220; border: 1px solid #2b3b55; border-radius: 8px; color: #fff; font-size: 15px; outline: none;
+  }
+  input:focus, select:focus, textarea:focus { border-color: #1e6fd9; }
+  textarea { resize: vertical; height: 80px; }
+
+  /* चेकबॉक्स ग्रिड */
+  .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .checkbox-item { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #d1d8e0; cursor: pointer; background: #0b1220; padding: 10px; border-radius: 8px; border: 1px solid #2b3b55; }
+  .checkbox-item input[type="checkbox"] { transform: scale(1.3); accent-color: #1e6fd9; }
+
+  /* सबमिट बटन */
+  .btn-submit { width: 100%; padding: 15px; background: #1e6fd9; color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+  .btn-submit:active { background: #1655a8; }
+
+  /* सख्त नियम वाला बॉक्स (Escrow & Rules) */
+  .rules-box { background: rgba(255, 71, 87, 0.1); border: 1px solid #ff4757; padding: 15px; border-radius: 8px; margin-top: 20px; margin-bottom: 20px; }
+  .rules-box h4 { color: #ff4757; margin-bottom: 10px; font-size: 14px; }
+  .rule-label { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; font-size: 13px; color: #fff; cursor: pointer; line-height: 1.4; }
+  .rule-label input { margin-top: 3px; transform: scale(1.2); accent-color: #ff4757; }
+</style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html" class="back-btn">← होम</a>
+    <h1>📢 नौकरी डालें</h1>
+  </header>
+
+  <div id="alertBox" class="alert">सही ईमेल डालें।</div>
+
+  <!-- एम्प्लॉयर लॉगिन / साइनअप -->
+  <div class="card">
+    <div class="card-title">🔐 एम्प्लॉयर लॉगिन / साइनअप</div>
+    <div class="form-group">
+      <input type="email" id="empEmail" placeholder="ईमेल आईडी (Email)">
+    </div>
+    <div class="form-group">
+      <input type="password" id="empPass" placeholder="पासवर्ड (6+ अक्षर)">
+    </div>
+    <div style="display: flex; gap: 10px;">
+      <button class="btn-submit" style="background: #2b3b55;" onclick="login()">लॉगिन</button>
+      <button class="btn-submit" onclick="signup()">नया अकाउंट</button>
+    </div>
+  </div>
+
+  <!-- नौकरी की जानकारी -->
+  <div class="card">
+    <div class="card-title">📝 नौकरी की जानकारी</div>
+    
+    <div class="form-group">
+      <label>नौकरी का प्रकार (Job Category)</label>
+      <select id="jobCategory" required>
+        <option value="Security">🛡️ सिक्योरिटी (Security)</option>
+        <option value="Labour">👷 लेबर / मजदूर (Labour)</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <input type="text" id="jobTitle" placeholder="पद (जैसे: Security Guard / Mason / Helper)" required>
+    </div>
+    <div class="form-group">
+      <input type="text" id="companyName" placeholder="कंपनी / ठेकेदार का नाम" required>
+    </div>
+
+    <!-- All India Location -->
+    <div style="display: flex; gap: 10px;">
+      <div class="form-group" style="flex: 1;">
+        <select id="state" required>
+          <option value="">राज्य चुनें</option>
+          <option value="Maharashtra">महाराष्ट्र</option>
+          <option value="Delhi">दिल्ली</option>
+          <option value="Uttar Pradesh">उत्तर प्रदेश</option>
+          <option value="Bihar">बिहार</option>
+          <option value="Gujarat">गुजरात</option>
+          <option value="Karnataka">कर्नाटक</option>
+          <option value="Other">अन्य (Other)</option>
+        </select>
+      </div>
+      <div class="form-group" style="flex: 1;">
+        <input type="text" id="city" placeholder="शहर (City)" required>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <input type="text" id="experience" placeholder="अनुभव (जैसे: 2-3 साल / फ्रेशर)">
+    </div>
+    <div class="form-group">
+      <input type="text" id="salary" placeholder="सैलरी / डेली वेज (जैसे: ₹18,000 या ₹500/दिन)" required>
+    </div>
+    <div class="form-group">
+      <input type="text" id="dutyHours" placeholder="ड्यूटी के घंटे (जैसे: 8 घंटे, 12 घंटे)">
+    </div>
+
+    <div class="form-group">
+      <label>✅ सुविधाएं (जो मिलती हैं, टिक करें):</label>
+      <div class="checkbox-grid">
+        <label class="checkbox-item"><input type="checkbox" value="ESI"> ESI</label>
+        <label class="checkbox-item"><input type="checkbox" value="PF"> PF</label>
+        <label class="checkbox-item"><input type="checkbox" value="Bonus"> बोनस</label>
+        <label class="checkbox-item"><input type="checkbox" value="Paid Leave"> पेड लीव</label>
+        <label class="checkbox-item"><input type="checkbox" value="Room"> रहने का रूम</label>
+        <label class="checkbox-item"><input type="checkbox" value="Food"> खाना</label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>🎯 स्किल्स (जो लागू हों, टिक करें):</label>
+      <div class="checkbox-grid">
+        <label class="checkbox-item"><input type="checkbox" value="Physical Guarding"> फिजिकल गार्डिंग</label>
+        <label class="checkbox-item"><input type="checkbox" value="Mason/Helper"> मिस्त्री / हेल्पर</label>
+        <label class="checkbox-item"><input type="checkbox" value="Plumbing/Electrical"> प्लंबिंग / इलेक्ट्रिकल</label>
+        <label class="checkbox-item"><input type="checkbox" value="CCTV"> सीसीटीवी (CCTV)</label>
+        <label class="checkbox-item"><input type="checkbox" value="Fire Safety"> फायर एंड सेफ्टी</label>
+        <label class="checkbox-item"><input type="checkbox" value="Loading/Unloading"> लोडिंग / अनलोडिंग</label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>📄 काम का विवरण:</label>
+      <textarea id="jobDesc" placeholder="जिम्मेदारियां और काम की जानकारी लिखें..."></textarea>
+    </div>
+  </div>
+
+  <!-- संपर्क जानकारी -->
+  <div class="card">
+    <div class="card-title">📞 संपर्क (जो देना चाहें)</div>
+    <div class="form-group">
+      <input type="text" id="phone" placeholder="फोन नंबर (10 अंक)" required>
+    </div>
+    <div class="form-group">
+      <input type="text" id="whatsapp" placeholder="WhatsApp नंबर (10 अंक)">
+    </div>
+    <div class="form-group">
+      <input type="email" id="contactEmail" placeholder="ईमेल आईडी">
+    </div>
+  </div>
+
+  <!-- 🚨 सख्त नियम (Escrow & Legal) -->
+  <div class="rules-box">
+    <h4>⚠️ ठेकेदार के लिए सख्त नियम (अनिवार्य):</h4>
+    
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>नौकरी डालें - लेबर हायर</title>
 
 <meta name="google-site-verification" content="c5BKbJ1JwhErZBmkNowyEthsh-8SVExbUUx9ZCqr5Po" />
@@ -12,15 +184,12 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
   body { background: #0b1220; color: #fff; padding: 20px; padding-bottom: 50px; }
-
   header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #2b3b55; }
   .back-btn { color: #fff; text-decoration: none; font-size: 15px; }
   header h1 { font-size: 18px; color: #ffa500; }
-
   .card { background: #141e30; border: 1px solid #2b3b55; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
   .card-title { color: #ffa500; font-size: 16px; margin-bottom: 15px; font-weight: bold; border-bottom: 1px dashed #2b3b55; padding-bottom: 8px; }
   .hint { font-size: 12px; color: #7f93b0; margin-top: 4px; }
-
   .form-group { margin-bottom: 15px; }
   .form-group label { display: block; font-size: 14px; color: #9fc0e8; margin-bottom: 6px; }
   .row { display: flex; gap: 10px; }
@@ -30,16 +199,13 @@
   }
   input:focus, select:focus, textarea:focus { border-color: #1e6fd9; }
   textarea { resize: vertical; min-height: 70px; }
-
   .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
   .checkbox-item { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #d1d8e0; cursor: pointer; background: #0b1220; padding: 10px; border-radius: 8px; border: 1px solid #2b3b55; }
   .checkbox-item input { transform: scale(1.3); accent-color: #1e6fd9; }
-
   .declare-box { background: rgba(30, 111, 217, 0.08); border: 1px solid #1e6fd9; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
   .declare-box h4 { color: #9fc0e8; margin-bottom: 8px; font-size: 14px; }
   .rule-label { display: flex; align-items: flex-start; gap: 10px; margin-top: 10px; font-size: 13px; color: #fff; cursor: pointer; line-height: 1.5; }
   .rule-label input { margin-top: 3px; transform: scale(1.2); accent-color: #1e6fd9; }
-
   .btn-submit { width: 100%; padding: 16px; background: #1e6fd9; color: #fff; border: none; border-radius: 8px; font-size: 17px; font-weight: bold; cursor: pointer; margin-top: 10px; }
   .btn-submit:active { background: #1655a8; }
   .btn-submit:disabled { background: #2b3b55; cursor: not-allowed; }
@@ -52,7 +218,7 @@
     <h1>📢 नौकरी डालें</h1>
   </header>
 
-  <!-- 1. नियोक्ता की पहचान -->
+  <!-- 1. नियोक्ता की जानकारी -->
   <div class="card">
     <div class="card-title">🏢 1. नियोक्ता की जानकारी</div>
 
@@ -135,7 +301,7 @@
     </div>
   </div>
 
-  <!-- 3. मज़दूरी और भुगतान की शर्तें -->
+  <!-- 3. मज़दूरी और भुगतान की लिखित शर्तें -->
   <div class="card">
     <div class="card-title">💰 3. मज़दूरी और भुगतान की लिखित शर्तें</div>
 
@@ -150,7 +316,7 @@
       </div>
       <div class="form-group">
         <label>मज़दूरी की राशि (₹) *</label>
-        <input type="number" id="wageAmount" min="0" placeholder="जैसे: 600" required>
+        <input type="number" id="wageAmount" min="1" placeholder="जैसे: 600" required>
       </div>
     </div>
 
@@ -171,7 +337,7 @@
         <option value="Weekly">हर हफ़्ते</option>
         <option value="Monthly-1-10">हर महीने की 1 से 10 तारीख के बीच</option>
         <option value="On-completion">काम पूरा होने पर</option>
-        <option value="Other">अन्य (नीचे लिखें)</option>
+        <option value="Other">अन्य</option>
       </select>
     </div>
 
@@ -305,7 +471,7 @@
   <!-- 6. संपर्क -->
   <div class="card">
     <div class="card-title">📞 6. संपर्क की जानकारी</div>
-    <p class="hint" style="margin-bottom:12px;">यह नंबर सिर्फ़ तभी दिखेगा जब मज़दूर संपर्क बटन दबाएगा। सार्वजनिक सूची में नहीं दिखेगा।</p>
+    <p class="hint" style="margin-bottom:12px;">यह नंबर सार्वजनिक सूची में नहीं दिखेगा। प्लेटफ़ॉर्म इसे अलग सुरक्षित जगह रखता है।</p>
 
     <div class="form-group">
       <label>मोबाइल नंबर *</label>
@@ -323,7 +489,7 @@
     </div>
   </div>
 
-  <!-- 7. घोषणा और सहमति -->
+  <!-- 7. घोषणा -->
   <div class="declare-box">
     <h4>📋 घोषणा</h4>
     <label class="rule-label">
@@ -344,21 +510,21 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, doc, writeBatch, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // यह config index.html से हूबहू कॉपी करें (apiKey सहित)
     const firebaseConfig = {
-      apiKey: "आपकी_API_KEY_यहाँ",
+      apiKey: "AIzaSyAkVn1rj2klXafSTkf30K6lsJNSJhu3Ryw",
       authDomain: "securityhire-fc26f.firebaseapp.com",
       projectId: "securityhire-fc26f",
       storageBucket: "securityhire-fc26f.firebasestorage.app",
       messagingSenderId: "234313705418",
-      appId: "1:234313705418:web:4fce21c507d0b3a8d75d33",
+      appId: "1:234313705418:web:4fce21c507c5ab62f01133",
       measurementId: "G-84P3Q1NCY7"
     };
 
     const db = getFirestore(initializeApp(firebaseConfig));
     const val = id => document.getElementById(id).value.trim();
+    const PHONE_RE = /^[6-9]\d{9}$/;
 
     window.postJob = async function () {
       const required = [
@@ -379,14 +545,14 @@
       for (const [id, label] of required) {
         if (!val(id)) { alert(`कृपया "${label}" भरें`); return; }
       }
-      if (!/^[6-9]\d{9}$/.test(val("phone"))) {
-        alert("मोबाइल नंबर 10 अंकों का होना चाहिए और 6 से 9 से शुरू होना चाहिए");
-        return;
-      }
-      if (val("altPhone") && !/^[6-9]\d{9}$/.test(val("altPhone"))) {
-        alert("दूसरा नंबर सही नहीं है");
-        return;
-      }
+
+      if (Number(val("wageAmount")) <= 0) { alert("मज़दूरी की राशि 0 से ज़्यादा होनी चाहिए"); return; }
+      const hours = Number(val("dutyHours"));
+      if (hours < 1 || hours > 24) { alert("रोज़ के घंटे 1 से 24 के बीच होने चाहिए"); return; }
+      if (!PHONE_RE.test(val("phone"))) { alert("मोबाइल नंबर 10 अंकों का होना चाहिए और 6 से 9 से शुरू होना चाहिए"); return; }
+      if (val("altPhone") && !PHONE_RE.test(val("altPhone"))) { alert("दूसरा नंबर सही नहीं है"); return; }
+      if (val("endDate") && val("endDate") < val("joinDate")) { alert("काम खत्म होने की तारीख ज्वाइनिंग की तारीख से पहले नहीं हो सकती"); return; }
+
       if (!document.getElementById("declInfo").checked ||
           !document.getElementById("declWage").checked ||
           !document.getElementById("declConsent").checked) {
@@ -396,59 +562,52 @@
 
       const facilities = [...document.querySelectorAll('input[name="facility"]:checked')].map(c => c.value);
 
-      const job = {
-        // नियोक्ता
+      // सार्वजनिक जॉब: इसमें कोई फ़ोन नंबर नहीं
+      const publicJob = {
         employerType: val("employerType"),
         orgName: val("orgName"),
-        contactPerson: val("contactPerson"),
-        registrationNo: val("registrationNo"),
+        registrationNo: val("registrationNo") || null,
         yearsActive: Number(val("yearsActive")) || 0,
-
-        // काम
         category: val("jobCategory"),
         title: val("jobTitle"),
         skillLevel: val("skillLevel"),
         workersNeeded: Number(val("workersNeeded")),
         jobType: val("jobType"),
-        language: val("language"),
-
-        // मज़दूरी
+        language: val("language") || null,
         wageType: val("wageType"),
         wageAmount: Number(val("wageAmount")),
         overtimeRate: Number(val("overtimeRate")) || 0,
-        dutyHours: Number(val("dutyHours")),
+        dutyHours: hours,
         payDay: val("payDay"),
         payMode: val("payMode"),
         advanceAllowed: val("advanceAllowed") === "Yes",
         advanceAmount: Number(val("advanceAmount")) || 0,
         weeklyOff: val("weeklyOff"),
         shift: val("shift"),
-
-        // सुविधाएँ और खर्च
         facilities,
         roomCost: val("roomCost"),
         travelCost: val("travelCost"),
-
-        // स्थान और समय
         state: val("state"),
         district: val("district"),
         city: val("city"),
         workAddress: val("workAddress"),
         joinDate: val("joinDate"),
         endDate: val("endDate") || null,
-
-        // संपर्क (सार्वजनिक सूची में नहीं दिखाया जाएगा)
-        phone: val("phone"),
-        altPhone: val("altPhone") || null,
-        contactEmail: val("contactEmail") || null,
-
-        // स्थिति और गिनती (एडमिन या सिस्टम तय करेगा)
         status: "pending",
         verified: false,
         complaintCount: 0,
         contactClicks: 0,
         createdAt: serverTimestamp(),
-        consentGiven: true
+        consentAt: serverTimestamp()
+      };
+
+      // निजी संपर्क: सिर्फ़ admin पढ़ सकेगा (Firestore rules में)
+      const contact = {
+        contactPerson: val("contactPerson"),
+        phone: val("phone"),
+        altPhone: val("altPhone") || null,
+        contactEmail: val("contactEmail") || null,
+        createdAt: serverTimestamp()
       };
 
       const btn = document.getElementById("submitBtn");
@@ -456,7 +615,13 @@
       btn.textContent = "सेव हो रहा है...";
 
       try {
-        await addDoc(collection(db, "jobs"), job);
+        // जॉब और संपर्क एक साथ: या दोनों सेव होंगे, या कोई नहीं
+        const batch = writeBatch(db);
+        const jobRef = doc(collection(db, "jobs"));
+        batch.set(jobRef, publicJob);
+        batch.set(doc(db, "jobContacts", jobRef.id), { ...contact, jobId: jobRef.id });
+        await batch.commit();
+
         alert("आपकी नौकरी सबमिट हो गई है। एडमिन जाँच के बाद यह दिखेगी।");
         window.location.href = "index.html";
       } catch (err) {
@@ -468,4 +633,4 @@
     };
   </script>
 </body>
-         </html>
+</html>

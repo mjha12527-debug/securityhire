@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>नौकरी डालें - SecurityHire</title>
+<title>नौकरी डालें - लेबर हायर</title>
 
 <meta name="google-site-verification" content="c5BKbJ1JwhErZBmkNowyEthsh-8SVExbUUx9ZCqr5Po" />
 <link rel="manifest" href="manifest.json">
@@ -12,39 +12,37 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
   body { background: #0b1220; color: #fff; padding: 20px; padding-bottom: 50px; }
-  
-  /* हेडर */
+
   header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #2b3b55; }
   .back-btn { color: #fff; text-decoration: none; font-size: 15px; }
   header h1 { font-size: 18px; color: #ffa500; }
 
-  /* फॉर्म कार्ड */
   .card { background: #141e30; border: 1px solid #2b3b55; border-radius: 12px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-  .card-title { color: #ffa500; font-size: 16px; margin-bottom: 15px; font-weight: bold; display: flex; align-items: center; gap: 8px; }
+  .card-title { color: #ffa500; font-size: 16px; margin-bottom: 15px; font-weight: bold; border-bottom: 1px dashed #2b3b55; padding-bottom: 8px; }
+  .hint { font-size: 12px; color: #7f93b0; margin-top: 4px; }
 
-  /* इनपुट फील्ड्स */
   .form-group { margin-bottom: 15px; }
   .form-group label { display: block; font-size: 14px; color: #9fc0e8; margin-bottom: 6px; }
-  input[type="text"], input[type="number"], input[type="email"], input[type="password"], select, textarea {
+  .row { display: flex; gap: 10px; }
+  .row > .form-group { flex: 1; }
+  input[type="text"], input[type="number"], input[type="email"], input[type="tel"], input[type="date"], select, textarea {
     width: 100%; padding: 12px; background: #0b1220; border: 1px solid #2b3b55; border-radius: 8px; color: #fff; font-size: 15px; outline: none;
   }
   input:focus, select:focus, textarea:focus { border-color: #1e6fd9; }
-  textarea { resize: vertical; height: 80px; }
+  textarea { resize: vertical; min-height: 70px; }
 
-  /* चेकबॉक्स ग्रिड */
   .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
   .checkbox-item { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #d1d8e0; cursor: pointer; background: #0b1220; padding: 10px; border-radius: 8px; border: 1px solid #2b3b55; }
-  .checkbox-item input[type="checkbox"] { transform: scale(1.3); accent-color: #1e6fd9; }
+  .checkbox-item input { transform: scale(1.3); accent-color: #1e6fd9; }
 
-  /* सबमिट बटन */
-  .btn-submit { width: 100%; padding: 15px; background: #1e6fd9; color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-  .btn-submit:active { background: #1655a8; }
-
-  /* डेटा वेरिफिकेशन बॉक्स (लाल रंग की जगह नीला/हरा) */
-  .verify-box { background: rgba(30, 111, 217, 0.1); border: 1px solid #1e6fd9; padding: 15px; border-radius: 8px; margin-top: 20px; margin-bottom: 20px; }
-  .verify-box h4 { color: #5cb85c; margin-bottom: 10px; font-size: 14px; }
-  .rule-label { display: flex; align-items: flex-start; gap: 10px; margin-top: 15px; font-size: 13px; color: #fff; cursor: pointer; line-height: 1.4; }
+  .declare-box { background: rgba(30, 111, 217, 0.08); border: 1px solid #1e6fd9; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+  .declare-box h4 { color: #9fc0e8; margin-bottom: 8px; font-size: 14px; }
+  .rule-label { display: flex; align-items: flex-start; gap: 10px; margin-top: 10px; font-size: 13px; color: #fff; cursor: pointer; line-height: 1.5; }
   .rule-label input { margin-top: 3px; transform: scale(1.2); accent-color: #1e6fd9; }
+
+  .btn-submit { width: 100%; padding: 16px; background: #1e6fd9; color: #fff; border: none; border-radius: 8px; font-size: 17px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+  .btn-submit:active { background: #1655a8; }
+  .btn-submit:disabled { background: #2b3b55; cursor: not-allowed; }
 </style>
 </head>
 <body>
@@ -54,120 +52,420 @@
     <h1>📢 नौकरी डालें</h1>
   </header>
 
-  <!-- नौकरी की जानकारी -->
+  <!-- 1. नियोक्ता की पहचान -->
   <div class="card">
-    <div class="card-title">📝 नौकरी की जानकारी</div>
-    
+    <div class="card-title">🏢 1. नियोक्ता की जानकारी</div>
+
     <div class="form-group">
-      <label>नौकरी का प्रकार (Job Category)</label>
-      <select id="jobCategory" required>
-        <option value="Security">🛡️ सिक्योरिटी (Security)</option>
-        <option value="Labour">👷 लेबर / मजदूर (Labour)</option>
+      <label>आप कौन हैं? *</label>
+      <select id="employerType" required>
+        <option value="">चुनें</option>
+        <option value="company">कंपनी</option>
+        <option value="contractor">ठेकेदार</option>
+        <option value="individual">व्यक्तिगत मालिक</option>
       </select>
     </div>
 
     <div class="form-group">
-      <input type="text" id="jobTitle" placeholder="पद (जैसे: Security Guard / Mason / Helper)" required>
+      <label>कंपनी / ठेकेदार / मालिक का नाम *</label>
+      <input type="text" id="orgName" placeholder="पूरा नाम" required>
     </div>
 
-    <!-- All India Location -->
-    <div style="display: flex; gap: 10px;">
-      <div class="form-group" style="flex: 1;">
-        <select id="state" required>
-          <option value="">राज्य चुनें</option>
-          <option value="Maharashtra">महाराष्ट्र</option>
-          <option value="Delhi">दिल्ली</option>
-          <option value="Uttar Pradesh">उत्तर प्रदेश</option>
-          <option value="Bihar">बिहार</option>
-          <option value="Gujarat">गुजरात</option>
-          <option value="Karnataka">कर्नाटक</option>
-          <option value="Other">अन्य (Other)</option>
+    <div class="form-group">
+      <label>संपर्क व्यक्ति का नाम *</label>
+      <input type="text" id="contactPerson" placeholder="जो फ़ोन उठाएगा" required>
+    </div>
+
+    <div class="form-group">
+      <label>GST / CIN / ठेकेदार लाइसेंस नंबर</label>
+      <input type="text" id="registrationNo" placeholder="अगर है तो लिखें, वरना खाली छोड़ें">
+      <div class="hint">यह होने पर एडमिन जाँच कर "सत्यापित" का निशान दे सकता है।</div>
+    </div>
+
+    <div class="form-group">
+      <label>कितने साल से यह काम कर रहे हैं?</label>
+      <input type="number" id="yearsActive" min="0" placeholder="जैसे: 5">
+    </div>
+  </div>
+
+  <!-- 2. काम की जानकारी -->
+  <div class="card">
+    <div class="card-title">📝 2. काम की जानकारी</div>
+
+    <div class="form-group">
+      <label>नौकरी का प्रकार *</label>
+      <select id="jobCategory" required>
+        <option value="Labour">👷 लेबर / मज़दूर</option>
+        <option value="Security">🛡️ सिक्योरिटी</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>पद का नाम *</label>
+      <input type="text" id="jobTitle" placeholder="जैसे: मिस्त्री / हेल्पर / गार्ड / ड्राइवर" required>
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label>कौशल स्तर *</label>
+        <select id="skillLevel" required>
+          <option value="Unskilled">अनस्किल्ड</option>
+          <option value="Semi-skilled">सेमी-स्किल्ड</option>
+          <option value="Skilled">स्किल्ड</option>
         </select>
       </div>
-      <div class="form-group" style="flex: 1;">
-        <input type="text" id="city" placeholder="शहर (City)" required>
+      <div class="form-group">
+        <label>कितने लोग चाहिए *</label>
+        <input type="number" id="workersNeeded" min="1" placeholder="जैसे: 10" required>
       </div>
     </div>
 
     <div class="form-group">
-      <input type="text" id="salary" placeholder="सैलरी / डेली वेज (जैसे: ₹18,000 या ₹500/दिन)" required>
+      <label>काम का प्रकार</label>
+      <select id="jobType">
+        <option value="Full Time">फुल टाइम</option>
+        <option value="Part Time">पार्ट टाइम</option>
+        <option value="Contract">ठेका (प्रोजेक्ट बेस)</option>
+      </select>
     </div>
 
     <div class="form-group">
-      <label>📄 काम का विवरण:</label>
-      <textarea id="jobDesc" placeholder="जिम्मेदारियां और काम की जानकारी लिखें..."></textarea>
+      <label>बोली जाने वाली ज़रूरी भाषा</label>
+      <input type="text" id="language" placeholder="जैसे: हिंदी, मराठी">
     </div>
   </div>
 
-  <!-- ठेकेदार / कंपनी की पहचान (सबसे जरुरी) -->
+  <!-- 3. मज़दूरी और भुगतान की शर्तें -->
   <div class="card">
-    <div class="card-title">🛡️ कंपनी / ठेकेदार की पहचान (अनिवार्य)</div>
-    
-    <div class="form-group">
-      <input type="text" id="companyName" placeholder="कंपनी या ठेकेदार का पूरा नाम" required>
+    <div class="card-title">💰 3. मज़दूरी और भुगतान की लिखित शर्तें</div>
+
+    <div class="row">
+      <div class="form-group">
+        <label>मज़दूरी का प्रकार *</label>
+        <select id="wageType" required>
+          <option value="Daily">प्रतिदिन</option>
+          <option value="Monthly">मासिक</option>
+          <option value="Piece">प्रति इकाई / काम के हिसाब से</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>मज़दूरी की राशि (₹) *</label>
+        <input type="number" id="wageAmount" min="0" placeholder="जैसे: 600" required>
+      </div>
     </div>
-    <div class="form-group">
-      <input type="text" id="ownerName" placeholder="मालिक का नाम (Owner Name)" required>
+
+    <div class="row">
+      <div class="form-group">
+        <label>ओवरटाइम की दर (₹ प्रति घंटा)</label>
+        <input type="number" id="overtimeRate" min="0" placeholder="जैसे: 80">
+      </div>
+      <div class="form-group">
+        <label>रोज़ के घंटे *</label>
+        <input type="number" id="dutyHours" min="1" max="24" placeholder="जैसे: 8" required>
+      </div>
     </div>
+
     <div class="form-group">
-      <input type="text" id="licenseNo" placeholder="PSARA / लेबर लाइसेंस नंबर" required>
+      <label>मज़दूरी कब मिलेगी? *</label>
+      <select id="payDay" required>
+        <option value="Weekly">हर हफ़्ते</option>
+        <option value="Monthly-1-10">हर महीने की 1 से 10 तारीख के बीच</option>
+        <option value="On-completion">काम पूरा होने पर</option>
+        <option value="Other">अन्य (नीचे लिखें)</option>
+      </select>
     </div>
+
     <div class="form-group">
-      <textarea id="fullAddress" placeholder="कंपनी का पूरा पता (ऑफिस एड्रेस)" required></textarea>
+      <label>भुगतान का तरीका *</label>
+      <select id="payMode" required>
+        <option value="Cash">नकद (रसीद के साथ)</option>
+        <option value="Bank">बैंक ट्रांसफ़र</option>
+        <option value="UPI">UPI</option>
+        <option value="Cheque">चेक</option>
+      </select>
     </div>
+
     <div class="form-group">
-      <input type="text" id="mapLocation" placeholder="Google Maps लोकेशन लिंक (वैकल्पिक)">
+      <label>क्या एडवांस मिलेगा?</label>
+      <select id="advanceAllowed">
+        <option value="No">नहीं</option>
+        <option value="Yes">हाँ</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>अगर हाँ, तो कितना एडवांस? (₹)</label>
+      <input type="number" id="advanceAmount" min="0" placeholder="जैसे: 2000">
+      <div class="hint">एडवांस की राशि और उसे कैसे कटेगा, यह लिखित रूप में दर्ज होगा।</div>
+    </div>
+
+    <div class="form-group">
+      <label>साप्ताहिक छुट्टी</label>
+      <select id="weeklyOff">
+        <option value="Sunday">रविवार</option>
+        <option value="Rotational">रोटेशन से</option>
+        <option value="None">कोई छुट्टी नहीं</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>ड्यूटी का समय</label>
+      <select id="shift">
+        <option value="Day">दिन की ड्यूटी</option>
+        <option value="Night">रात की ड्यूटी</option>
+        <option value="Rotational">बदलती रहती है</option>
+      </select>
     </div>
   </div>
 
-  <!-- संपर्क जानकारी -->
+  <!-- 4. सुविधाएँ और खर्च -->
   <div class="card">
-    <div class="card-title">📞 संपर्क</div>
-    <div class="form-group">
-      <input type="text" id="phone" placeholder="मोबाइल नंबर (10 अंक)" required>
+    <div class="card-title">✅ 4. सुविधाएँ और खर्च</div>
+    <p class="hint" style="margin-bottom:10px;">जो सुविधा आप दे रहे हैं, उस पर टिक करें:</p>
+
+    <div class="checkbox-grid">
+      <label class="checkbox-item"><input type="checkbox" name="facility" value="Room"> 🛏️ रहने की जगह</label>
+      <label class="checkbox-item"><input type="checkbox" name="facility" value="Food"> 🍛 खाना</label>
+      <label class="checkbox-item"><input type="checkbox" name="facility" value="Transport"> 🚌 आने-जाने का साधन</label>
+      <label class="checkbox-item"><input type="checkbox" name="facility" value="ESI-PF"> 🛡️ ESI / PF</label>
+      <label class="checkbox-item"><input type="checkbox" name="facility" value="Bonus"> 🎁 बोनस</label>
+      <label class="checkbox-item"><input type="checkbox" name="facility" value="Uniform"> 👕 यूनिफ़ॉर्म</label>
     </div>
+
     <div class="form-group">
-      <input type="email" id="contactEmail" placeholder="ईमेल आईडी (Official Email)" required>
+      <label>रहने की जगह का खर्च किसका होगा?</label>
+      <select id="roomCost">
+        <option value="NA">लागू नहीं</option>
+        <option value="Employer">कंपनी देगी (मुफ़्त)</option>
+        <option value="Worker">मज़दूर को देना होगा</option>
+        <option value="Deducted">मज़दूरी से कटेगा</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>घर से काम की जगह तक आने-जाने का खर्च किसका होगा?</label>
+      <select id="travelCost">
+        <option value="NA">लागू नहीं</option>
+        <option value="Employer">कंपनी देगी</option>
+        <option value="Worker">मज़दूर खुद देगा</option>
+      </select>
     </div>
   </div>
 
-  <!-- ⚠️ कानूनी चेतावनी (Fake नहीं, बस एक Declaration) -->
-  <div class="verify-box">
-    <h4>⚠️ कानूनी घोषणा (Legal Declaration):</h4>
-    <p style="font-size: 13px; color: #9fc0e8; margin-bottom: 10px;">
-      SecurityHire एक मध्यस्थ (Platform) है। यहाँ दी गई जानकारी की सत्यता की जिम्मेदारी पूरी तरह से ठेकेदार/कंपनी की है।
-    </p>
+  <!-- 5. स्थान और समय -->
+  <div class="card">
+    <div class="card-title">📍 5. स्थान और समय</div>
+
+    <div class="row">
+      <div class="form-group">
+        <label>राज्य *</label>
+        <select id="state" required>
+          <option value="">चुनें</option>
+          <option>आंध्र प्रदेश</option><option>अरुणाचल प्रदेश</option><option>असम</option>
+          <option>बिहार</option><option>छत्तीसगढ़</option><option>गोवा</option>
+          <option>गुजरात</option><option>हरियाणा</option><option>हिमाचल प्रदेश</option>
+          <option>झारखंड</option><option>कर्नाटक</option><option>केरल</option>
+          <option>मध्य प्रदेश</option><option>महाराष्ट्र</option><option>मणिपुर</option>
+          <option>मेघालय</option><option>मिज़ोरम</option><option>नागालैंड</option>
+          <option>ओडिशा</option><option>पंजाब</option><option>राजस्थान</option>
+          <option>सिक्किम</option><option>तमिलनाडु</option><option>तेलंगाना</option>
+          <option>त्रिपुरा</option><option>उत्तर प्रदेश</option><option>उत्तराखंड</option>
+          <option>पश्चिम बंगाल</option><option>दिल्ली</option><option>जम्मू-कश्मीर</option>
+          <option>लद्दाख</option><option>अन्य</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>ज़िला *</label>
+        <input type="text" id="district" placeholder="ज़िला" required>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>शहर / गाँव *</label>
+      <input type="text" id="city" placeholder="शहर या गाँव" required>
+    </div>
+
+    <div class="form-group">
+      <label>काम की जगह का पूरा पता *</label>
+      <textarea id="workAddress" placeholder="साइट या फ़ैक्ट्री का पूरा पता" required></textarea>
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label>ज्वाइनिंग की तारीख *</label>
+        <input type="date" id="joinDate" required>
+      </div>
+      <div class="form-group">
+        <label>काम खत्म होने की तारीख</label>
+        <input type="date" id="endDate">
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. संपर्क -->
+  <div class="card">
+    <div class="card-title">📞 6. संपर्क की जानकारी</div>
+    <p class="hint" style="margin-bottom:12px;">यह नंबर सिर्फ़ तभी दिखेगा जब मज़दूर संपर्क बटन दबाएगा। सार्वजनिक सूची में नहीं दिखेगा।</p>
+
+    <div class="form-group">
+      <label>मोबाइल नंबर *</label>
+      <input type="tel" id="phone" inputmode="numeric" maxlength="10" placeholder="10 अंकों का नंबर" required>
+    </div>
+
+    <div class="form-group">
+      <label>दूसरा नंबर (वैकल्पिक)</label>
+      <input type="tel" id="altPhone" inputmode="numeric" maxlength="10" placeholder="10 अंकों का नंबर">
+    </div>
+
+    <div class="form-group">
+      <label>ईमेल (वैकल्पिक)</label>
+      <input type="email" id="contactEmail" placeholder="ईमेल">
+    </div>
+  </div>
+
+  <!-- 7. घोषणा और सहमति -->
+  <div class="declare-box">
+    <h4>📋 घोषणा</h4>
     <label class="rule-label">
-      <input type="checkbox" id="ruleDeclaration" required>
-      <span>मैं पुष्टि करता हूँ कि ऊपर दी गई सभी जानकारी (लाइसेंस, पता, नाम) सही है। अगर यह झूठी पाई जाती है, तो मेरे खिलाफ <b>पुलिस में FIR (धोखाधड़ी)</b> दर्ज की जा सकती है।</span>
+      <input type="checkbox" id="declInfo" required>
+      <span>मैं पुष्टि करता हूँ कि ऊपर दी गई जानकारी सही है।</span>
+    </label>
+    <label class="rule-label">
+      <input type="checkbox" id="declWage" required>
+      <span>मैं मानता हूँ कि मज़दूरी उस राज्य की न्यूनतम मज़दूरी से कम नहीं होगी, और ऊपर लिखी भुगतान की तारीख का पालन करूँगा।</span>
+    </label>
+    <label class="rule-label">
+      <input type="checkbox" id="declConsent" required>
+      <span>मैं सहमति देता हूँ कि यह जानकारी प्लेटफ़ॉर्म पर सेव हो और नौकरी खोजने वाले मज़दूरों को दिखाई जाए।</span>
     </label>
   </div>
 
-  <button class="btn-submit" onclick="postJob()">✅ नौकरी पोस्ट करें</button>
+  <button class="btn-submit" id="submitBtn" onclick="postJob()">✅ नौकरी पोस्ट करें</button>
 
-  <script>
-    function postJob() {
-      // जरुरी जानकारी चेक करना
-      const title = document.getElementById('jobTitle').value;
-      const comp = document.getElementById('companyName').value;
-      const lic = document.getElementById('licenseNo').value;
-      const phone = document.getElementById('phone').value;
-      const address = document.getElementById('fullAddress').value;
-      const isDeclared = document.getElementById('ruleDeclaration').checked;
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-      if(!title || !comp || !lic || !phone || !address) {
-        alert("कृपया पद, कंपनी का नाम, लाइसेंस नंबर, पता और फोन नंबर भरें!");
+    // यह config index.html से हूबहू कॉपी करें (apiKey सहित)
+    const firebaseConfig = {
+      apiKey: "आपकी_API_KEY_यहाँ",
+      authDomain: "securityhire-fc26f.firebaseapp.com",
+      projectId: "securityhire-fc26f",
+      storageBucket: "securityhire-fc26f.firebasestorage.app",
+      messagingSenderId: "234313705418",
+      appId: "1:234313705418:web:4fce21c507d0b3a8d75d33",
+      measurementId: "G-84P3Q1NCY7"
+    };
+
+    const db = getFirestore(initializeApp(firebaseConfig));
+    const val = id => document.getElementById(id).value.trim();
+
+    window.postJob = async function () {
+      const required = [
+        ["employerType", "आप कौन हैं"],
+        ["orgName", "नाम"],
+        ["contactPerson", "संपर्क व्यक्ति"],
+        ["jobTitle", "पद का नाम"],
+        ["workersNeeded", "कितने लोग चाहिए"],
+        ["wageAmount", "मज़दूरी की राशि"],
+        ["dutyHours", "रोज़ के घंटे"],
+        ["state", "राज्य"],
+        ["district", "ज़िला"],
+        ["city", "शहर / गाँव"],
+        ["workAddress", "काम की जगह का पता"],
+        ["joinDate", "ज्वाइनिंग की तारीख"],
+        ["phone", "मोबाइल नंबर"]
+      ];
+      for (const [id, label] of required) {
+        if (!val(id)) { alert(`कृपया "${label}" भरें`); return; }
+      }
+      if (!/^[6-9]\d{9}$/.test(val("phone"))) {
+        alert("मोबाइल नंबर 10 अंकों का होना चाहिए और 6 से 9 से शुरू होना चाहिए");
         return;
       }
-      if(!isDeclared) {
-        alert("कृपया कानूनी घोषणा वाले बॉक्स को टिक (Check) करें!");
+      if (val("altPhone") && !/^[6-9]\d{9}$/.test(val("altPhone"))) {
+        alert("दूसरा नंबर सही नहीं है");
         return;
       }
-      
-      alert("आपकी नौकरी की जानकारी सबमिट हो गई है। एडमिन द्वारा जांच के बाद इसे लाइव किया जाएगा।");
-      // यहाँ आगे Firebase/डेटाबेस का कोड जुड़ेगा
-      window.location.href = "index.html"; // सबमिट के बाद होम पेज पर भेजें
-    }
+      if (!document.getElementById("declInfo").checked ||
+          !document.getElementById("declWage").checked ||
+          !document.getElementById("declConsent").checked) {
+        alert("कृपया तीनों घोषणाएँ टिक करें");
+        return;
+      }
+
+      const facilities = [...document.querySelectorAll('input[name="facility"]:checked')].map(c => c.value);
+
+      const job = {
+        // नियोक्ता
+        employerType: val("employerType"),
+        orgName: val("orgName"),
+        contactPerson: val("contactPerson"),
+        registrationNo: val("registrationNo"),
+        yearsActive: Number(val("yearsActive")) || 0,
+
+        // काम
+        category: val("jobCategory"),
+        title: val("jobTitle"),
+        skillLevel: val("skillLevel"),
+        workersNeeded: Number(val("workersNeeded")),
+        jobType: val("jobType"),
+        language: val("language"),
+
+        // मज़दूरी
+        wageType: val("wageType"),
+        wageAmount: Number(val("wageAmount")),
+        overtimeRate: Number(val("overtimeRate")) || 0,
+        dutyHours: Number(val("dutyHours")),
+        payDay: val("payDay"),
+        payMode: val("payMode"),
+        advanceAllowed: val("advanceAllowed") === "Yes",
+        advanceAmount: Number(val("advanceAmount")) || 0,
+        weeklyOff: val("weeklyOff"),
+        shift: val("shift"),
+
+        // सुविधाएँ और खर्च
+        facilities,
+        roomCost: val("roomCost"),
+        travelCost: val("travelCost"),
+
+        // स्थान और समय
+        state: val("state"),
+        district: val("district"),
+        city: val("city"),
+        workAddress: val("workAddress"),
+        joinDate: val("joinDate"),
+        endDate: val("endDate") || null,
+
+        // संपर्क (सार्वजनिक सूची में नहीं दिखाया जाएगा)
+        phone: val("phone"),
+        altPhone: val("altPhone") || null,
+        contactEmail: val("contactEmail") || null,
+
+        // स्थिति और गिनती (एडमिन या सिस्टम तय करेगा)
+        status: "pending",
+        verified: false,
+        complaintCount: 0,
+        contactClicks: 0,
+        createdAt: serverTimestamp(),
+        consentGiven: true
+      };
+
+      const btn = document.getElementById("submitBtn");
+      btn.disabled = true;
+      btn.textContent = "सेव हो रहा है...";
+
+      try {
+        await addDoc(collection(db, "jobs"), job);
+        alert("आपकी नौकरी सबमिट हो गई है। एडमिन जाँच के बाद यह दिखेगी।");
+        window.location.href = "index.html";
+      } catch (err) {
+        console.error(err);
+        alert("सेव नहीं हो पाया। इंटरनेट जाँचें या थोड़ी देर बाद कोशिश करें।");
+        btn.disabled = false;
+        btn.textContent = "✅ नौकरी पोस्ट करें";
+      }
+    };
   </script>
 </body>
-</html>
+         </html>
